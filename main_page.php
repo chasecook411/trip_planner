@@ -13,8 +13,12 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-$key = "<check discord>";
+$key = "AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24";
+
+$userid = $_GET['userid'];
 ?>
+
+
 
 <html>
     <head>
@@ -33,6 +37,7 @@ $key = "<check discord>";
             padding: 0;
           }
           */
+
         </style>
 
         <script>
@@ -46,18 +51,10 @@ $key = "<check discord>";
             ?>
         }
 
-        <?php 
-            $lat;
-            $lon;
-            if (isset($_GET['lat']) && isset($_GET['lon'])) {
-                $lat = $_GET['lat'];
-                $lon = $_GET['lon'];
-            } else {
-                $lat = "-44.4444";
-                $lon = "-44.4444";
-            }
+        <?php
+        $lat = 10;
+        $lon = 10;
         ?>
-
         function initMap() {
             var map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
@@ -70,13 +67,13 @@ $key = "<check discord>";
             var lat = document.getElementById('latitude').value;//"35.1495";
             var lon = document.getElementById('longitude').value;//"90.0490";
             var area = document.getElementById('radius').value;// "100";
-            debug('Lat ' + lat + ' Lon ' + lon);
+            //debug('Lat ' + lat + ' Lon ' + lon);
             var baseUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json?key=<?php echo $key; ?>";
 
             baseUrl = baseUrl + '&query=' + query;
             baseUrl = baseUrl + '&location=' + lat + ',' + lon;
             baseUrl = baseUrl + '&radius=' + area;  
-            debug('About to call ajax request with ' + baseUrl);
+            //debug('About to call ajax request with ' + baseUrl);
 
             $.ajax({
                 url: 'http://localhost/get_data.php?url=' + baseUrl, 
@@ -91,7 +88,7 @@ $key = "<check discord>";
 
         // expects an array of locations
         function parseLocations(locations) {
-            debug(locations);
+            //debug(locations);
             locations = JSON.parse(locations);
             locations = locations.results;
             var parent = document.getElementById("locations");
@@ -108,7 +105,7 @@ $key = "<check discord>";
             parent.appendChild(h);
             locations.forEach(function (location) {
 
-                debug(location.formatted_address);
+                //debug(location.formatted_address);
 
                 var locationName = document.createElement("p");
                 var node = document.createTextNode("Name: " + location.name);
@@ -131,7 +128,7 @@ $key = "<check discord>";
 
                 var addButton = document.createElement("BUTTON");
                 var locationId = location.place_id;
-                debug(locationId);
+                //debug(locationId);
                 addButton.setAttribute("id", locationId);
                 addButton.setAttribute('onclick','addLocation(\'' + locationId + '\')');
                 node = document.createTextNode("Add Location");
@@ -149,7 +146,7 @@ $key = "<check discord>";
             debug('Got location! ' + locationId);
             var baseUrl = "https://maps.googleapis.com/maps/api/place/details/json&key=<?php echo $key; ?>";
             baseUrl = baseUrl + "&placeid=" + locationId;
-            debug(baseUrl);
+            //debug(baseUrl);
             debug('http://localhost/get_data.php?url=' + baseUrl);
             $.ajax({
                 url: 'http://localhost/get_data.php?url=' + baseUrl, 
@@ -163,17 +160,34 @@ $key = "<check discord>";
         }
 
         function parseLocationDetails(place) {
-            debug('got place ' + place);
+            //debug('got place ' + place);
             place = JSON.parse(place).result;
-            addedLocations.push(place);
+            var rating = 99;
+            if (place.rating) {
+                rating = place.rating;
+            }
+
+            var p = {
+                id: place.id,
+                name: place.name,
+                icon: place.icon,
+                url: place.url,
+                formatted_address: place.formatted_address,
+                longitude: place.geometry.location.lng,
+                latitude: place.geometry.location.lat,
+                rating: place.rating,                        // default value of 99
+                opening_hours: place.opening_hours
+            }
+
+            addedLocations.push(p);
+            //debug('added locations', JSON.stringify(addedLocations));
             
-            debug(addedLocations);
             var parent = document.getElementById("iteneraryList");
             addedLocations.forEach(function(result) {
                 // if the element doesn't already exist  
                 // on the page, add it!
 
-                debug(result)
+                //debug(result)
                 if (!document.getElementById(result.id)) {
                     var userLocation = document.createElement("h5");
                     userLocation.setAttribute('id', result.id);
@@ -231,10 +245,33 @@ $key = "<check discord>";
                 }
             });
         }
+
+        function saveList() {
+            debug(addedLocations);
+            var listName = document.getElementById('list_name').value;
+            var tripObject = {
+                'userid': <?php echo $userid; ?>,
+                'trip_name': listName,
+                'trip': addedLocations
+            }
+            debug(JSON.stringify(tripObject));
+            $.ajax({
+                url: 'http://localhost/endpoints/update_trip.php',
+                type: "POST",
+                data: JSON.stringify(tripObject),
+                contentType: "application/json",
+                success: function(result) {
+                    debug('added list to db');
+                    debug(JSON.stringify(result));
+                },
+                error: function(err) {
+                    console.log('Error adding list');
+                }
+            });
+        }
+
         </script>
 
-        <script src="https://maps.googleapis.com/maps/api/js?key= <?php echo $key; ?>&callback=initMap"
-        async defer></script>
 
         <style>
             #locations {
@@ -286,7 +323,9 @@ $key = "<check discord>";
         <div id="iteneraryList">
             <h3>Added Locations</h3>
         </div>
-
+        <div id="svbtn">
+            List Name: <input type="text" id="list_name" value="My List"></input>
+            <button onclick="saveList()">"Save Your List"</button>
+        </div>
     </body>
-
 </html>
