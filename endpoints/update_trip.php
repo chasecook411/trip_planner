@@ -12,6 +12,7 @@ if ($client_data) {
 
     // expects a json object containing a userid, tripname, and an array containing locations
     $trip_object = json_decode($client_data);
+    //print_r($trip_object);
     $attractions = $trip_object->trip;
     $query = 'select * from trips where user_id = "' . $trip_object->userid . '" and trip_name = "' . $trip_object->trip_name . '";';
 
@@ -25,7 +26,7 @@ if ($client_data) {
         $result = $conn->query($query);
         for ($i = 0; $i < count($attractions); $i++) {
             $query = 'select * from attractions where address = "' . $attractions[$i]->formatted_address . '";';
-            echo $query;
+            //echo $query;
             $res = $conn->query($query);
 
             if ($res->num_rows > 0) {
@@ -34,7 +35,8 @@ if ($client_data) {
                 $res = $conn->query($update);
             } else {
                 // doesn't exist in database, insert it
-                $insert = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . '4.7);';
+                $insert = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $attractions[$i]->rating . ', "' . $attractions[$i]->id . '");';
+                echo $insert;
                 $res = $conn->query($insert);
             }
         }
@@ -80,9 +82,10 @@ if ($client_data) {
         }
         for ($i = 0; $i < count($attractions); $i++) {
             // attraction_id, trip_id, priority, address, longitude, latitude, time_spent, rating
-            $query = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . '4.7);';
+            $query = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $attractions[$i]->rating . ', "' . $attractions[$i]->id . '");';
+            echo $query;
             $result = $conn->query($query);  
-            print_r('Trip added!');  
+            //print_r('Trip added!');  
         }
         
     }
