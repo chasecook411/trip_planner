@@ -76,7 +76,7 @@ $userid = $_GET['userid'];
             //debug('About to call ajax request with ' + baseUrl);
 
             $.ajax({
-                url: 'http://localhost/get_data.php?url=' + baseUrl, 
+                url: 'http://localhost/endpoints/get_data.php?url=' + baseUrl, 
                 type: "GET",   
                 cache: false,
                 success: parseLocations,
@@ -147,9 +147,9 @@ $userid = $_GET['userid'];
             var baseUrl = "https://maps.googleapis.com/maps/api/place/details/json&key=<?php echo $key; ?>";
             baseUrl = baseUrl + "&placeid=" + locationId;
             //debug(baseUrl);
-            debug('http://localhost/get_data.php?url=' + baseUrl);
+            debug('http://localhost/endpoints/get_data.php?url=' + baseUrl);
             $.ajax({
-                url: 'http://localhost/get_data.php?url=' + baseUrl, 
+                url: 'http://localhost/endpoints/get_data.php?url=' + baseUrl, 
                 type: "GET",   
                 cache: false,
                 success: parseLocationDetails,
