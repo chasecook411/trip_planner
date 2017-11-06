@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>SightSeer Signup</title>
+</head>
+<body>
+    <h2>
+        All good adventures start somewhere. Let's get you an account!</br>
+    </h2>
+    <form id = "setup" action = "/insert_user.php" method = "POST">
+        <strong>First Name: </strong><input type = "text", name = "f_name"></br>
+        <strong>Last Name: </strong><input type = "text", name = "l_name"></br>
+        <strong>Email: </strong><input type = "text", name = "email"></br>
+        <strong>Password: </strong><input type = "password", name = "password"></br>
+        <strong>Confirm Password: </strong><input type = "password", name = "c_password"></br>
+	    <button type = "submit">Submit</button>
+	</form>
+        <!--
+	<script>
+	    function submission() {
+                var password = document.getElementByName("password")[0].value;
+                var c_password = document.getElementByName("c_password"[0].value);
+                if (password === c_password) {
+                    document.getElementById("setup").submit();
+                }
+                else {
+                    console.log("Passwords did not match.");
+                }
+            }
+	</script>
+        -->
+</body>
+</html>
