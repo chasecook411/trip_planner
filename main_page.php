@@ -13,7 +13,7 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-$key = "<check discord>";
+$key = "AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24";
 
 $userid = $_GET['userid'];
 ?>
@@ -182,7 +182,7 @@ $userid = $_GET['userid'];
             addedLocations.push(p);
             //debug('added locations', JSON.stringify(addedLocations));
             
-            var parent = document.getElementById("itineraryList");
+            var parent = document.getElementById("iteneraryList");
             addedLocations.forEach(function(result) {
                 // if the element doesn't already exist  
                 // on the page, add it!
@@ -279,7 +279,7 @@ $userid = $_GET['userid'];
                 width: 25%;
             }
 
-            #itineraryList {
+            #iterneraryList {
                 float: right;
                 width: 25%;
             }
@@ -320,7 +320,7 @@ $userid = $_GET['userid'];
             <h3>Search Results</h3>
         </div>
 
-        <div id="itineraryList">
+        <div id="iteneraryList">
             <h3>Added Locations</h3>
         </div>
         <div id="svbtn">
