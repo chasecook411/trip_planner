@@ -35,7 +35,11 @@ if ($client_data) {
                 $res = $conn->query($update);
             } else {
                 // doesn't exist in database, insert it
-                $insert = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $attractions[$i]->rating . ', "' . $attractions[$i]->id . '");';
+                $rating = "NULL";
+                if (property_exists($attractions[$i], 'rating')) {
+                    $rating = $attractions[$i]->rating;
+                }
+                $insert = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $rating . ', "' . $attractions[$i]->id . '");';
                 echo $insert;
                 $res = $conn->query($insert);
             }
@@ -82,7 +86,12 @@ if ($client_data) {
         }
         for ($i = 0; $i < count($attractions); $i++) {
             // attraction_id, trip_id, priority, address, longitude, latitude, time_spent, rating
-            $query = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $attractions[$i]->rating . ', "' . $attractions[$i]->id . '");';
+
+            $rating = "NULL";
+            if (property_exists($attractions[$i], 'rating')) {
+                $rating = $attractions[$i]->rating;
+            }
+            $query = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $rating . ', "' . $attractions[$i]->id . '");';
             echo $query;
             $result = $conn->query($query);  
             //print_r('Trip added!');  

@@ -13,7 +13,7 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-$key = "AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24";
+$key = "";
 
 $userid = $_GET['userid'];
 ?>
