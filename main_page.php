@@ -13,11 +13,7 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-<<<<<<< HEAD
-$key = "";
-=======
 $key = "<check discord>";
->>>>>>> 5f5a7bf1f4ffe26564c9c1e5443daf5bb3ea856d
 
 $userid = $_GET['userid'];
 ?>
