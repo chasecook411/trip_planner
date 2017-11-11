@@ -16,6 +16,7 @@
 $key = "<check discord>";
 
 $userid = $_GET['userid'];
+$trip_name = $_GET['tripname'];
 ?>
 
 
@@ -129,7 +130,7 @@ $userid = $_GET['userid'];
                 var addButton = document.createElement("BUTTON");
                 var locationId = location.place_id;
                 //debug(locationId);
-                addButton.setAttribute("id", locationId);
+                //addButton.setAttribute("id", locationId);
                 addButton.setAttribute('onclick','addLocation(\'' + locationId + '\')');
                 node = document.createTextNode("Add Location");
                 addButton.appendChild(node);
@@ -168,7 +169,7 @@ $userid = $_GET['userid'];
             }
 
             var p = {
-                id: place.id,
+                id: place.place_id,
                 name: place.name,
                 icon: place.icon,
                 url: place.url,
@@ -179,11 +180,14 @@ $userid = $_GET['userid'];
                 opening_hours: place.opening_hours
             }
 
+            //debug('in parseLocationDetails')
+            //debug('pushing locations ' + JSON.stringify(p))
             addedLocations.push(p);
             //debug('added locations', JSON.stringify(addedLocations));
-            
             var parent = document.getElementById("itineraryList");
             addedLocations.forEach(function(result) {
+
+                console.log('adding to list', result.id);
                 // if the element doesn't already exist  
                 // on the page, add it!
 
@@ -240,8 +244,6 @@ $userid = $_GET['userid'];
                         operation.appendChild(node);
                         parent.appendChild(operation);
                     }
-                    
-
                 }
             });
         }
@@ -266,6 +268,24 @@ $userid = $_GET['userid'];
                 },
                 error: function(err) {
                     console.log('Error adding list');
+                }
+            });
+        }
+
+        function loadList(tripId) {
+            //debug('loading list! for trip id ' + tripId);
+            $.ajax({
+                url: 'http://localhost/endpoints/query_attractions.php?tripid=' + tripId + '&userid=' + '<?php echo $userid; ?>', 
+                type: "GET",   
+                cache: false,
+                success: function(result) {
+                    result = JSON.parse(result);
+                    result.forEach(function(place) {
+                        addLocation(place.place_id);
+                    });
+                },
+                error: function(err) {
+                    debug(err);
                 }
             });
         }
@@ -307,8 +327,19 @@ $userid = $_GET['userid'];
         </style>
     </head>
 
-    <body>
-        <div id="map" onload="initMap()">
+    <?php
+
+        if (isset($_GET['tripid'])) {
+            // if the trip id is already set, then we want to update the page
+            // to show the locations already on that trip. Everything else should 
+            // stay the same
+            $tripid = $_GET['tripid'];
+            echo '<body onload="loadList(' . $tripid . ')">';
+        } else {
+            echo '<body>';
+        }
+    ?>
+                <div id="map">
         </div>
 <!-- 
         Type: <input type="text" id="type" value="Bar"></br>
@@ -324,12 +355,15 @@ $userid = $_GET['userid'];
             <h3>Search Results</h3>
         </div>
 
+        
+
         <div id="itineraryList">
             <h3>Added Locations</h3>
         </div>
         <div id="svbtn">
-            List Name: <input type="text" id="list_name" value="My List"></input>
+            List Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
             <button onclick="saveList()">"Save Your List"</button>
         </div>
+
     </body>
 </html>
