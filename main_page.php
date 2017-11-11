@@ -13,7 +13,7 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-$key = "<check discord>";
+$key = "AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24";
 
 $userid = $_GET['userid'];
 $trip_name = $_GET['tripname'];
@@ -86,7 +86,6 @@ $trip_name = $_GET['tripname'];
                 console.log('radius too large!');
             }
         }
-
         // expects an array of locations
         function parseLocations(locations) {
             //debug(locations);
@@ -160,10 +159,29 @@ $trip_name = $_GET['tripname'];
             });
         }
 
+        function removeLocation(LocationId) {
+            debug('Removed Location! ' + LocationId);
+            // remove location
+            temp = addedLocations.indexOf(LocationId);
+            addedLocations.splice(temp, 1); // temp is the index of the element and 1 is the amount of elements to remove
+
+/*            $.ajax({
+                url: 'http://localhost/endpoints/get_data.php?url=' + baseUrl,
+                type: "POST",
+                cache: false,
+                success: parseLocationDetails,
+                error: function(err){
+                    debug(err);
+                }
+            })*/
+
+        }
+
         function parseLocationDetails(place) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
             var rating = 99;
+            //debug(JSON.stringify(place));
             if (place.rating) {
                 rating = place.rating;
             }
@@ -218,8 +236,6 @@ $trip_name = $_GET['tripname'];
                         website.setAttribute("href", result.url);
                         parent.appendChild(website);
                     }
-                    
-
                     var lineBreak = document.createElement("br");
                     parent.appendChild(lineBreak);
 
@@ -245,6 +261,13 @@ $trip_name = $_GET['tripname'];
                         parent.appendChild(operation);
                     }
                 }
+                var removeButton = document.createElement("BUTTON");
+                removeButton.setAttribute("id", result.id);
+                removeButton.setAttribute('onclick','removeLocation(\'' + result.id + '\')');
+                node = document.createTextNode("remove Location");
+                removeButton.appendChild(node);
+
+                parent.appendChild(removeButton);
             });
         }
 
@@ -325,10 +348,12 @@ $trip_name = $_GET['tripname'];
             }
 
         </style>
+        <link rel="stylesheet" type="text/css" href="CssStuff.css">
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Sight Seer - Find Your Path</title>
     </head>
-
     <?php
-
+    
         if (isset($_GET['tripid'])) {
             // if the trip id is already set, then we want to update the page
             // to show the locations already on that trip. Everything else should 
@@ -339,6 +364,26 @@ $trip_name = $_GET['tripname'];
             echo '<body>';
         }
     ?>
+        <div class="jumbotron">
+            <div class="container sight-seer">
+             Sight Seer
+            </div>
+        </div>
+    <!-- Navigation Bar -->
+    <header>
+        <div class="navigation">
+            <ul>
+                <li class="Info"><a class="active" href="#">Info</a></li>
+                <li class="Dashboard"><a href="http://localhost/main_page.php">Dashboard</a></li>
+                <li class="Trips"><a href="#">Trips</a></li>
+                <li class="Login"><a href="http://localhost/login_page.php">Login</a></li>
+                <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
+                <li class="Account"><a href="#">Account</a></li>
+            </ul>
+        </div>
+    </header>
+        <div id="map" onload="initMap()">
+        </div>
                 <div id="map">
         </div>
 <!-- 

@@ -3,6 +3,8 @@
 ?>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="CssStuff.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <title>Login to Sights</title>
     <script src="jquery-3.2.1.min.js"></script>
     <script>
@@ -73,8 +75,27 @@
 </head>
 
 <body>
+    <div class="jumbotron">
+        <div class="container sight-seer">
+            Sight Seer
+        </div>
+      </div>
+    <!-- Navigation Bar -->
+    <header>
+        <div class="navigation">
+            <ul>
+                <li class="Info"><a class="active" href="#">Info</a></li>
+                <li class="Dashboard"><a href="http://localhost/main_page.php">Dashboard</a></li>
+                <li class="Trips"><a href="#">Trips</a></li>
+                <li class="Login"><a href="http://localhost/login_page.php">Login</a></li>
+                <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
+                <li class="Account"><a href="#">Account</a></li>
+            </ul>
+        </div>
+    </header>
 <!--similar variable names like email have a prefix to distinguish login variables vs signup variables,
     "lo_" for login and "s_" for signup-->
+
     <div id="login">
     <span>Enter email:</span>
     <input type="text" id="lo_email"></br>
