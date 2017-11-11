@@ -63,20 +63,9 @@ $userid = $_GET['userid'];
         }
 
         function getLocations() {
-            var query = document.getElementById('type').value;//"restaurant";
-            var lat = document.getElementById('latitude').value;//"35.1495";
-            var lon = document.getElementById('longitude').value;//"90.0490";
-            var area = document.getElementById('radius').value;// "100";
-            //debug('Lat ' + lat + ' Lon ' + lon);
-            var baseUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json?key=<?php echo $key; ?>";
-
-            baseUrl = baseUrl + '&query=' + query;
-            baseUrl = baseUrl + '&location=' + lat + ',' + lon;
-            baseUrl = baseUrl + '&radius=' + area;  
-            //debug('About to call ajax request with ' + baseUrl);
-
+            var query = document.getElementById('search').value;
             $.ajax({
-                url: 'http://localhost/endpoints/get_data.php?url=' + baseUrl, 
+                url: 'http://localhost/endpoints/get_locations.php?query=' + query, 
                 type: "GET",   
                 cache: false,
                 success: parseLocations,
@@ -144,12 +133,12 @@ $userid = $_GET['userid'];
 
         function addLocation(locationId) {
             debug('Got location! ' + locationId);
-            var baseUrl = "https://maps.googleapis.com/maps/api/place/details/json&key=<?php echo $key; ?>";
-            baseUrl = baseUrl + "&placeid=" + locationId;
+            //var baseUrl = "https://maps.googleapis.com/maps/api/place/details/json&key=<?php echo $key; ?>";
+            //baseUrl = baseUrl + "&placeid=" + locationId;
             //debug(baseUrl);
-            debug('http://localhost/endpoints/get_data.php?url=' + baseUrl);
+            debug('http://localhost/endpoints/get_location_data.php?placeid=' + locationId);
             $.ajax({
-                url: 'http://localhost/endpoints/get_data.php?url=' + baseUrl, 
+                url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId, 
                 type: "GET",   
                 cache: false,
                 success: parseLocationDetails,
@@ -310,11 +299,14 @@ $userid = $_GET['userid'];
     <body>
         <div id="map" onload="initMap()">
         </div>
-
+<!-- 
         Type: <input type="text" id="type" value="Bar"></br>
         Latitude: <input type="text" id="latitude" value="35"></br>
         Longitude: <input type="text" id="longitude" value="-90"></br>
-        Radius: <input type="text" id="radius" value="1000"></br>
+        Radius: <input type="text" id="radius" value="1000"></br> -->
+
+        Search Places: <input type="text" id="search" value="Foo"></br>
+
         <button onclick="getLocations()">Click me</button></br>
         <div id="locations">
             <h3>Search Results</h3>
