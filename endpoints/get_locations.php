@@ -11,11 +11,13 @@ key — Your application's API key. This key identifies your application for pur
 */
 
 $key = 'AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
-if (isset($_GET['query'])) {
+if (isset($_GET['query']) && isset($_GET['radius'])) {
 
 	$query = urlencode($_GET['query']);
+
+	$radius = urlencode($_GET['radius']);
 	//echo $query;
-	$url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?key=' . $key . '&query=' . $query;
+	$url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?key=' . $key . '&query=' . $query . '&radius=' . $radius;
 	$ch = curl_init($url);
     $response = curl_exec($ch);
     curl_close($ch);

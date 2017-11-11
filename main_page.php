@@ -64,15 +64,26 @@ $userid = $_GET['userid'];
 
         function getLocations() {
             var query = document.getElementById('search').value;
-            $.ajax({
-                url: 'http://localhost/endpoints/get_locations.php?query=' + query, 
-                type: "GET",   
-                cache: false,
-                success: parseLocations,
-                error: function(err) {
-                    debug(err);
-                }
-            });
+            var cityState = document.getElementById('cityState').value;
+            var query = query + ' in ' + cityState;
+            var radius = parseInt(document.getElementById('radius').value) * 1609;
+
+            // have a max of 50000 meters in the google API radius
+            if (radius && radius < 50000) {
+                    $.ajax({
+                    url: 'http://localhost/endpoints/get_locations.php?query=' + query + '&radius=' + radius, 
+                    type: "GET",   
+                    cache: false,
+                    success: parseLocations,
+                    error: function(err) {
+                        debug(err);
+                    }
+                });
+            } else {
+
+                //todo - show user an error here...
+                console.log('radius too large!');
+            }
         }
 
         // expects an array of locations
@@ -306,7 +317,8 @@ $userid = $_GET['userid'];
         Radius: <input type="text" id="radius" value="1000"></br> -->
 
         Search Places: <input type="text" id="search" value="Foo"></br>
-
+        City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
+        Radius (miles): <input type="text" id="radius" value="10"></br>
         <button onclick="getLocations()">Click me</button></br>
         <div id="locations">
             <h3>Search Results</h3>
