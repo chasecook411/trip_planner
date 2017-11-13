@@ -16,9 +16,10 @@ if (isset($_POST['f_name']) && isset($_POST['l_name']) && isset($_POST['email'])
 
     // verify that email does not already exist
     $query = 'select email from users where email = "' . $email . '";';
-
+    $result = $conn->query($query);
+	
     // if result of query is greater than/equal to 1, then we need to err.
-    if (!$query) {
+    if (!$result) {
        //$message = "This email address has already been registered with an account.";
        header("HTTP/1.1 403 Forbidden");
     }
