@@ -142,24 +142,23 @@ $trip_name = $_GET['tripname'];
             });
         }
 
-        function addLocation(locationId) {
+        function addLocation(locationId,priority) {
             debug('Got location! ' + locationId);
-            //var baseUrl = "https://maps.googleapis.com/maps/api/place/details/json&key=<?php echo $key; ?>";
-            //baseUrl = baseUrl + "&placeid=" + locationId;
-            //debug(baseUrl);
             debug('http://localhost/endpoints/get_location_data.php?placeid=' + locationId);
             $.ajax({
                 url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId,
                 type: "GET",
                 cache: false,
-                success: parseLocationDetails,
+                success: function(result) {
+                    parseLocationDetails(result, priority);
+                },
                 error: function(err) {
                     debug(err);
                 }
             });
         }
 
-        function parseLocationDetails(place) {
+        function parseLocationDetails(place, priority) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
             var rating = 99;
@@ -187,7 +186,7 @@ $trip_name = $_GET['tripname'];
             var parent = document.getElementById("itineraryList");
             addedLocations.forEach(function(result) {
 
-                console.log('adding to list', result.id);
+                console.log('adding to list', result);
                 // if the element doesn't already exist
                 // on the page, add it!
 
@@ -199,6 +198,10 @@ $trip_name = $_GET['tripname'];
                     userLocation.appendChild(node);
                     userLocation.setAttribute("class", "locationNameClass");
                     parent.appendChild(userLocation);
+
+                    if (priority && priority == -1) {
+                        userLocation.setAttribute('class','skipped');
+                    }
 
                     var lineBreak = document.createElement("br");
                     parent.appendChild(lineBreak);
@@ -287,7 +290,7 @@ $trip_name = $_GET['tripname'];
                 success: function(result) {
                     result = JSON.parse(result);
                     result.forEach(function(place) {
-                        addLocation(place.place_id);
+                        addLocation(place.place_id, place.priority);
                     });
                 },
                 error: function(err) {
@@ -327,18 +330,18 @@ $trip_name = $_GET['tripname'];
                     },
                     //this should cause a visual update (red or grey background for skipped?)
                     success: function(greyOut) {
-                    console.log("Grey out");
-						/*var section = document.getElementsByTagName("h5");
+                        //var greyedOut = document.getElementById(pdiddy);
+                        //greyedOut.style.color = "red";
+						var section = document.getElementsByTagName("h5");
 						//var section = document.getElementById("itineraryList");
 						console.log(section);
 						for(i = 0; i < section.length; i++) {
 							//console.log(s);
-							if(section[i].getAttribute("id") == pdiddy) {
+							if(section[i].id == pdiddy) {
 								console.log("here");
-                                var children = section[i].childNodes();								
-								section[i].style.backgroundColor = "red";
+                                    section[i].setAttribute("class", "skipped");
 							}
-						}*/
+						}
                     },
                     error: function(err) {
                         console.log("Error skipping location.");
@@ -379,6 +382,11 @@ $trip_name = $_GET['tripname'];
             .locationNameClass {
                 margin: -13px;
                 margin-top: 10px;
+            }
+
+            .skipped {
+                color: gray;
+                text-decoration: line-through;
             }
 
         </style>

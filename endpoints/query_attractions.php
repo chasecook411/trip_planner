@@ -13,7 +13,7 @@ if (isset($_GET['tripid']) && isset($_GET['userid'])) {
 	$tripid = $_GET['tripid'];
 	$userid = $_GET['userid'];
 
-	$query = "SELECT a.place_id FROM trips t INNER JOIN attractions a ON t.trip_id = a.trip_id WHERE t.user_id = $userid AND a.trip_id = $tripid ORDER BY priority ASC"; 
+	$query = "SELECT a.place_id, a.priority FROM trips t INNER JOIN attractions a ON t.trip_id = a.trip_id WHERE t.user_id = $userid AND a.trip_id = $tripid ORDER BY priority ASC"; 
 
 	$result = $conn->query($query);
 	$places = Array();
