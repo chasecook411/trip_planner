@@ -1,5 +1,11 @@
 <?php
 
+$conn = new mysqli('localhost', 'root', 'root', 'lostdb');
+
+if ($conn->connect_error) {
+        die("Cound not connect: " . $conn->connect_error);
+}
+
 // for creating a new user
 // if we have everything we need to insert the user
 if (isset($_POST['f_name']) && isset($_POST['l_name']) && isset($_POST['email']) && isset($_POST['password'])) {
@@ -9,13 +15,22 @@ if (isset($_POST['f_name']) && isset($_POST['l_name']) && isset($_POST['email'])
     $password = $_POST['password'];
 
     // verify that email does not already exist
-    $query = 'select email from users where email = "' . $email '";';
-
-    // if result of query is greater than/equal to 1, then we need to err. 
-
+    $query = 'select email from users where email = "' . $email . '";';
+    $result = $conn->query($query);
+	
+    // if result of query is greater than/equal to 1, then we need to err.
+    if (!$result) {
+       //$message = "This email address has already been registered with an account.";
+       header("HTTP/1.1 403 Forbidden");
+    }
     //otherwise, start insertion
-    $query = 'insert into users values(NULL, "' . $f_name . '","'.$l_name . '","' . $email . '","' . $password. '");';
-    echo $query;
+    else {
+        $query = 'insert into users values(NULL, "' . $f_name . '","'.$l_name . '","' . $email . '","' . $password . '");';
+		$conn->query($query);
+        header("HTTP/1.1 200 OK");
+    }
 }
+
+$conn->close();
 
 ?>
