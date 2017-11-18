@@ -10,7 +10,7 @@ query — The text string on which to search, for example: "restaurant" or "123 
 key — Your application's API key. This key identifies your application for purposes of quota management and so that places added from your application are made immediately available to your app. See Get a key for Google Places API Web Service to see how to create an API Project and obtain your key.
 */
 
-$key = 'AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
+$key = '<check discord>';
 if (isset($_GET['query']) && isset($_GET['radius'])) {
 
 	$query = urlencode($_GET['query']);

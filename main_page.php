@@ -16,7 +16,12 @@
 $key = "<check discord>";
 
 $userid = $_GET['userid'];
-$trip_name = $_GET['tripname'];
+
+if (isset($_GET['tripname'])) {
+    $trip_name = $_GET['tripname'];
+} else {
+    $trip_name = null;
+}
 ?>
 
 
@@ -159,6 +164,11 @@ $trip_name = $_GET['tripname'];
         }
 
         function parseLocationDetails(place, priority) {
+            //enables the optimize button and function only if there are locations in the itinerary
+            if (document.getElementById("optimizeButton").hidden) {
+                document.getElementById("optimizeButton").hidden = false;
+            }
+
             //debug('got place ' + place);
             place = JSON.parse(place).result;
             var rating = 99;
@@ -350,6 +360,32 @@ $trip_name = $_GET['tripname'];
             }
         }
 
+        function optimize() {
+            debug(addedLocations);
+            $.ajax({
+                url:"http://localhost/endpoints/prep_route.php",
+                type: "POST",
+                data: JSON.stringify(addedLocations),
+                contentType: "application/json",
+                beforeSend: function() { //we want to empty the itinerary list so we can reset it
+                    var list = document.getElementById("itineraryList");
+                    while (list.childNodes.length > 3) {
+                        list.removeChild(list.lastChild); //remove last child
+                    }
+                },
+                success: function(result) {
+                    result = JSON.parse(result);
+                    result.forEach(function(place) {
+                        addLocation(place.place_id, place.priority);
+                    });
+                },
+                error: function(err) {
+                    debug(err);
+                }
+            })
+
+        }
+
         </script>
 
 
@@ -404,7 +440,7 @@ $trip_name = $_GET['tripname'];
             echo '<body>';
         }
     ?>
-                <div id="map">
+        <div id="map">
         </div>
 <!-- 
         Type: <input type="text" id="type" value="Bar"></br>
@@ -423,11 +459,12 @@ $trip_name = $_GET['tripname'];
         
 
         <div id="itineraryList">
-            <h3>Added Locations</h3>
+                <button hidden id="optimizeButton" onclick="optimize()">Optimize Route</button>
+               <h3>Added Locations</h3>
         </div>
         <div id="svbtn">
             List Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
-            <button onclick="saveList()">"Save Your List"</button>
+            <button onclick="saveList()">Save Your List</button>
         </div>
 
     </body>
