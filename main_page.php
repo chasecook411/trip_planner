@@ -197,7 +197,7 @@ $trip_name = $_GET['tripname'];
             // let's assume that and try to build the total distance. 
 
             if (addedLocations.length > 1) {
-                debug('length of array greater than 1');
+                //debug('length of array greater than 1');
                 var orig = addedLocations[addedLocations.length - 1].id;
                 var dest = addedLocations[addedLocations.length - 2].id;
                 $.ajax({
@@ -393,6 +393,25 @@ $trip_name = $_GET['tripname'];
             }
         }
 
+        function optimizeTrip() {
+            debug('Optimizing trip... ');
+            if (addedLocations.length > 2) {
+                $.ajax({
+                    url: "http://localhost/endpoints/optimize_trip.php",
+                    type: "POST",
+                    data: addedLocations,
+                    //this should cause a visual update (red or grey background for skipped?)
+                    success: function(yay) {
+                        // just refresh the page with the new database update. 
+                        window.location.replace(window.location.href);
+                    },
+                    error: function(err) {
+                        console.log("Error skipping location.");
+                    }
+                });
+            } 
+        }
+
         </script>
 
 
@@ -457,7 +476,8 @@ $trip_name = $_GET['tripname'];
         City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
         Radius (miles): <input type="text" id="radius" value="10"></br>
         <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
-        Total Distance: <span id="total"></span>
+        Total Distance: <span id="total"></span><br>
+        <button onclick="optimizeTrip()" id="optimize_button">Optimize</button>
         <div id="locations">
             <h3>Search Results</h3>
         </div>
