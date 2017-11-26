@@ -1,0 +1,76 @@
+from selenium import webdriver
+import string
+import random
+import time
+
+rand_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
+
+driver = webdriver.Chrome('C:\\Users\\Chase-Windows\\Desktop\\chromedriver-win32-v2.33.exe')
+
+driver.get('http://localhost/login_page.php')
+time.sleep(1)
+driver.find_element_by_id('f_name').send_keys('Chase')
+time.sleep(1)
+driver.find_element_by_id('l_name').send_keys('Cook')
+time.sleep(1)
+driver.find_element_by_id('s_email').send_keys('bogus_email' + rand_string)
+time.sleep(1)
+driver.find_element_by_id('s_password').send_keys('bogus_pass')
+time.sleep(1)
+driver.find_element_by_id('s_confirm_password').send_keys('bogus_pass')
+time.sleep(1)
+driver.find_element_by_id('signup_button').click()
+time.sleep(1)
+driver.get('http://localhost/login_page.php')
+time.sleep(1)
+driver.find_element_by_id('lo_email').send_keys('bogus_email' + rand_string)
+time.sleep(1)
+driver.find_element_by_id('lo_password').send_keys('bogus_pass')
+time.sleep(1)
+driver.find_element_by_id('login_button').click()
+time.sleep(1)
+driver.find_element_by_id('trip_name').send_keys('Memphis Trip ' + rand_string)
+time.sleep(1)
+driver.find_element_by_id('newtripbutton').click()
+time.sleep(1)
+
+driver.find_element_by_id('search').clear()
+time.sleep(1)
+driver.find_element_by_id('search').send_keys('Tourist Attractions')
+time.sleep(1)
+driver.find_element_by_id('radius').clear()
+time.sleep(1)
+driver.find_element_by_id('radius').send_keys('20')
+time.sleep(1)
+driver.find_element_by_id('attractions_button').click()
+time.sleep(2)
+
+driver.find_element_by_name('ChIJJXK9zjF91YcREcsjDP_xSP0').click()
+time.sleep(1)
+driver.find_element_by_name('ChIJq_vW87x-1YcRnGdLyzC0fp0').click()
+
+time.sleep(1)
+driver.find_element_by_id('search').clear()
+time.sleep(1)
+driver.find_element_by_id('search').send_keys('BarBQ')
+time.sleep(1)
+driver.find_element_by_id('attractions_button').click()
+
+time.sleep(2)
+driver.find_element_by_name('ChIJR3Y2vkyHf4gRNgMwWN-u6lw').click()
+
+time.sleep(1)
+driver.find_element_by_id('search').clear()
+time.sleep(1)
+driver.find_element_by_id('search').send_keys('Tourist Attractions')
+time.sleep(1)
+driver.find_element_by_id('attractions_button').click()
+time.sleep(2)
+driver.find_element_by_name('ChIJZTNfS5-Af4gRg3GydqrK7No')
+time.sleep(1)
+driver.find_element_by_name('ChIJu0OraRiEf4gRKiTw0xukNhI')
+
+time.sleep(1)
+driver.find_element_by_id('save_button').click()
+
+driver.execute_script("window.history.go(-1)")

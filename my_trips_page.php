@@ -48,6 +48,12 @@ $userid = $_GET['userid'];
 				url = url + "&tripid=" + tripId + '&tripname=' + tripname;
 				window.location.assign(url);
 			}
+
+			function createNewTrip() {
+				var tripName = document.getElementById('trip_name').value;
+				window.location.assign("http://localhost/main_page.php?userid=" + <?php echo $userid ?> + '&tripname=' + tripName);
+			}
+
 		</script>
 
 
@@ -62,6 +68,9 @@ $userid = $_GET['userid'];
 
 	</head>
 	<body onload="getTrips()">
+
+
+		</div>
 		<div id="navigation">
 				</div></br>
 
@@ -69,6 +78,10 @@ $userid = $_GET['userid'];
 			<h3>My Trips</h3>
 			
 		</div>
+
+		<div id="newtrip">
+		<input type=text id="trip_name"></input></br>
+		<button onclick="createNewTrip()" id="newtripbutton">Create a Trip</button></br>
 
 	</body>
 </html>

@@ -132,6 +132,7 @@ $trip_name = $_GET['tripname'];
                 //debug(locationId);
                 //addButton.setAttribute("id", locationId);
                 addButton.setAttribute('onclick','addLocation(\'' + locationId + '\')');
+                addButton.setAttribute('name', locationId);
                 node = document.createTextNode("Add Location");
                 addButton.appendChild(node);
 
@@ -281,6 +282,122 @@ $trip_name = $_GET['tripname'];
             });
         }
 
+  //       function loadList(tripId) {
+  //           //debug('loading list! for trip id ' + tripId);
+  //           $.ajax({
+  //               url: 'http://localhost/endpoints/query_attractions.php?tripid=' + tripId + '&userid=' + '<?php echo $userid; ?>', 
+  //               type: "GET",   
+  //               cache: false,
+  //               success: function(result) {
+  //                   result = JSON.parse(result);
+  //                   result.forEach(function(place) {
+  //                       $.ajax({
+  //                           url: 'http://localhost/endpoints/get_location_data.php?placeid=' + place.place_id,
+  //                           type: "GET",
+  //                           cache: false,
+  //                           success: function(goog_place) {
+  //                               var p = {
+  //                                   id: goog_place.place_id,
+  //                                   name: goog_place.name,
+  //                                   icon: goog_place.icon,
+  //                                   url: goog_place.url,
+  //                                   formatted_address: goog_place.formatted_address,
+  //                                   longitude: goog_place.geometry.location.lng,
+  //                                   latitude: goog_place.geometry.location.lat,
+  //                                   rating: goog_place.rating,                        // default value of 99
+  //                                   opening_hours: goog_place.opening_hours,
+  //                                   isSkipped: false
+  //                               }
+
+  //                               //debug('in parseLocationDetails')
+  //                               //debug('pushing locations ' + JSON.stringify(p))
+  //                               addedLocations.push(p);
+  //                               //debug('added locations', JSON.stringify(addedLocations));
+  //                               var parent = document.getElementById("itineraryList");
+  //                               addedLocations.forEach(function(result) {
+
+  //                                   console.log('adding to list', result);
+  //                                   // if the element doesn't already exist
+  //                                   // on the page, add it!
+
+  //                                   //debug(result)
+  //                                   if (!document.getElementById(result.id)) {
+  //                                       var userLocation = document.createElement("h5");
+  //                                       userLocation.setAttribute('id', result.id);
+  //                                       var node = document.createTextNode("Location: " + result.name);
+  //                                       userLocation.appendChild(node);
+  //                                       userLocation.setAttribute("class", "locationNameClass");
+  //                                       parent.appendChild(userLocation);
+
+  //                                       if (priority && priority == -1) {
+  //                                           userLocation.setAttribute('class','skipped');
+  //                                       }
+
+  //                                       var lineBreak = document.createElement("br");
+  //                                       parent.appendChild(lineBreak);
+
+  //                                       var icon = document.createElement("img");
+  //                                       icon.setAttribute("src", result.icon);
+  //                                       icon.setAttribute("class", "iconClass");
+  //                                       parent.appendChild(icon);
+
+  //                                       var lineBreak = document.createElement("br");
+  //                                       parent.appendChild(lineBreak);
+
+  //                                       if (result.url) {
+  //                                           var website = document.createElement("a");
+  //                                           node = document.createTextNode("See more information");
+  //                                           website.appendChild(node);
+  //                                           website.setAttribute("href", result.url);
+  //                                           parent.appendChild(website);
+  //                                       }
+
+
+  //                                       var lineBreak = document.createElement("br");
+  //                                       parent.appendChild(lineBreak);
+
+
+  //                                       // if the API returned hours of operation
+  //                                       if (result.opening_hours) {
+  //                                           var operation = document.createElement("p");
+  //                                           node = document.createTextNode("Hours of Operation");
+  //                                           operation.appendChild(node);
+  //                                           parent.appendChild(operation);
+
+  //                                           result.opening_hours.weekday_text.forEach(function(weekday) {
+  //                                               var hours = document.createElement("p");
+  //                                               hours.setAttribute("class", "weekdayClass");
+  //                                               node = document.createTextNode(weekday);
+  //                                               hours.appendChild(node);
+  //                                               parent.appendChild(hours)
+  //                                           })
+  //                                       } else {
+  //                                           var operation = document.createElement("p");
+  //                                           node = document.createTextNode("Hours of Operation Not Available at this time");
+  //                                           operation.appendChild(node);
+  //                                           parent.appendChild(operation);
+  //                                       }
+
+  //                                       var skipButton = document.createElement("button");
+  //                                       skipButton.setAttribute('onclick','skip(\'' + result.id + '\')');
+  //                                       var t = document.createTextNode("Skip Location");
+  //                                       skipButton.appendChild(t);
+  //                                       parent.appendChild(skipButton);
+  //                                   }
+  //                               });
+  //                           },
+  //                           error: function(err) {
+  //                               debug(err);
+  //                           }
+  //                       });
+  //                   });
+  //               },
+  //               error: function(err) {
+  //                   debug(err);
+		// 		}
+		// 	});
+		// }
+
         function loadList(tripId) {
             //debug('loading list! for trip id ' + tripId);
             $.ajax({
@@ -295,9 +412,9 @@ $trip_name = $_GET['tripname'];
                 },
                 error: function(err) {
                     debug(err);
-				}
-			});
-		}
+                }
+            });
+        }
 
         // This skips an attraction on the list, but does not permanently remove it.
         // A skipped attraction is not considered when computing a route.
@@ -412,10 +529,10 @@ $trip_name = $_GET['tripname'];
         Longitude: <input type="text" id="longitude" value="-90"></br>
         Radius: <input type="text" id="radius" value="1000"></br> -->
 
-        Search Places: <input type="text" id="search" value="Foo"></br>
+        Search Places: <input type="text" id="search" value="Tourist Attractions"></br>
         City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
         Radius (miles): <input type="text" id="radius" value="10"></br>
-        <button onclick="getLocations()">Click me</button></br>
+        <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
         <div id="locations">
             <h3>Search Results</h3>
         </div>
@@ -427,7 +544,7 @@ $trip_name = $_GET['tripname'];
         </div>
         <div id="svbtn">
             List Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
-            <button onclick="saveList()">"Save Your List"</button>
+            <button onclick="saveList()" id="save_button">Save Your List</button>
         </div>
 
     </body>
