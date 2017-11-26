@@ -51,6 +51,8 @@ $trip_name = $_GET['tripname'];
         $lon = 10;
         ?>
         var map = null;
+        var totalDistance = 0;
+
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
@@ -145,6 +147,7 @@ $trip_name = $_GET['tripname'];
                 url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId,
                 type: "GET",
                 cache: false,
+                async: false,
                 success: function(result) {
                     parseLocationDetails(result, priority);
                 },
@@ -188,82 +191,113 @@ $trip_name = $_GET['tripname'];
                 title: p.name
             });
 
-            //debug('in parseLocationDetails')
-            //debug('pushing locations ' + JSON.stringify(p))
             addedLocations.push(p);
-            //debug('added locations', JSON.stringify(addedLocations));
-            var parent = document.getElementById("itineraryList");
-            addedLocations.forEach(function(result) {
 
-                console.log('adding to list', result);
-                // if the element doesn't already exist
-                // on the page, add it!
+            // at this point, we can consider this place to be the last in the list? 
+            // let's assume that and try to build the total distance. 
+
+            if (addedLocations.length > 1) {
+                debug('length of array greater than 1');
+                var orig = addedLocations[addedLocations.length - 1].id;
+                var dest = addedLocations[addedLocations.length - 2].id;
+                $.ajax({
+                    url: 'http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest,
+                    type: "GET",
+                    cache: false,
+                    //async: false,
+                    success: function(result) {
+                        parseDistanceVal(result);
+                    },
+                    error: function(err) {
+                        debug(err);
+                    }
+                });
+            }
+
+            var parent = document.getElementById("itineraryList");
+            // addedLocations.forEach(function(result) {
+
+            //     console.log('adding to list', result);
+            //     // if the element doesn't already exist
+            //     // on the page, add it!
 
                 //debug(result)
-                if (!document.getElementById(result.id)) {
-                    var userLocation = document.createElement("h5");
-                    userLocation.setAttribute('id', result.id);
-                    var node = document.createTextNode("Location: " + result.name);
-                    userLocation.appendChild(node);
-                    userLocation.setAttribute("class", "locationNameClass");
-                    parent.appendChild(userLocation);
 
-                    if (priority && priority == -1) {
-                        userLocation.setAttribute('class','skipped');
-                    }
+            // element doesn't already exist
+            //debug('Element does not exist!! ' + JSON.stringify(p.name));
 
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
+            if (!document.getElementById(p.id)) {
+                var userLocation = document.createElement("h5");
+                userLocation.setAttribute('id', p.id);
+                var node = document.createTextNode("Location: " + p.name);
+                userLocation.appendChild(node);
+                userLocation.setAttribute("class", "locationNameClass");
+                parent.appendChild(userLocation);
 
-                    var icon = document.createElement("img");
-                    icon.setAttribute("src", result.icon);
-                    icon.setAttribute("class", "iconClass");
-                    parent.appendChild(icon);
-
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
-
-                    if (result.url) {
-                        var website = document.createElement("a");
-                        node = document.createTextNode("See more information");
-                        website.appendChild(node);
-                        website.setAttribute("href", result.url);
-                        parent.appendChild(website);
-                    }
-
-
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
-
-
-                    // if the API returned hours of operation
-                    if (result.opening_hours) {
-                        var operation = document.createElement("p");
-                        node = document.createTextNode("Hours of Operation");
-                        operation.appendChild(node);
-                        parent.appendChild(operation);
-
-                        result.opening_hours.weekday_text.forEach(function(weekday) {
-                            var hours = document.createElement("p");
-                            hours.setAttribute("class", "weekdayClass");
-                            node = document.createTextNode(weekday);
-                            hours.appendChild(node);
-                            parent.appendChild(hours)
-                        })
-                    } else {
-                        var operation = document.createElement("p");
-                        node = document.createTextNode("Hours of Operation Not Available at this time");
-                        operation.appendChild(node);
-                        parent.appendChild(operation);
-                    }
-
-                    var skipButton = document.createElement("button");
-					skipButton.setAttribute('onclick','skip(\'' + result.id + '\')');
-					var t = document.createTextNode("Skip Location");
-                    skipButton.appendChild(t);
-                    parent.appendChild(skipButton);
+                if (priority && priority == -1) {
+                    userLocation.setAttribute('class','skipped');
                 }
-            });
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+                var icon = document.createElement("img");
+                icon.setAttribute("src", p.icon);
+                icon.setAttribute("class", "iconClass");
+                parent.appendChild(icon);
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+                if (p.url) {
+                    var website = document.createElement("a");
+                    node = document.createTextNode("See more information");
+                    website.appendChild(node);
+                    website.setAttribute("href", p.url);
+                    parent.appendChild(website);
+                }
+
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+
+                // if the API returned hours of operation
+                if (p.opening_hours) {
+                    var operation = document.createElement("p");
+                    node = document.createTextNode("Hours of Operation");
+                    operation.appendChild(node);
+                    parent.appendChild(operation);
+
+                    p.opening_hours.weekday_text.forEach(function(weekday) {
+                        var hours = document.createElement("p");
+                        hours.setAttribute("class", "weekdayClass");
+                        node = document.createTextNode(weekday);
+                        hours.appendChild(node);
+                        parent.appendChild(hours)
+                    })
+                } else {
+                    var operation = document.createElement("p");
+                    node = document.createTextNode("Hours of Operation Not Available at this time");
+                    operation.appendChild(node);
+                    parent.appendChild(operation);
+                }
+
+                var skipButton = document.createElement("button");
+				skipButton.setAttribute('onclick','skip(\'' + p.id + '\')');
+				var t = document.createTextNode("Skip Location");
+                skipButton.appendChild(t);
+                parent.appendChild(skipButton);
+            }
+            //});
+        }
+
+        function parseDistanceVal(result) {
+            result = JSON.parse(result).rows[0].elements[0].distance;
+            totalDistance += result.value;
+            console.log(result);
+
+            document.getElementById('total').innerHTML = (totalDistance * 0.0006) + " miles" ;
         }
 
         function saveList() {
@@ -423,6 +457,7 @@ $trip_name = $_GET['tripname'];
         City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
         Radius (miles): <input type="text" id="radius" value="10"></br>
         <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
+        Total Distance: <span id="total"></span>
         <div id="locations">
             <h3>Search Results</h3>
         </div>
