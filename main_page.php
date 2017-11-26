@@ -195,11 +195,11 @@ $trip_name = $_GET['tripname'];
 
             // at this point, we can consider this place to be the last in the list? 
             // let's assume that and try to build the total distance. 
-
             if (addedLocations.length > 1) {
                 //debug('length of array greater than 1');
                 var orig = addedLocations[addedLocations.length - 1].id;
                 var dest = addedLocations[addedLocations.length - 2].id;
+                debug('http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest);
                 $.ajax({
                     url: 'http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest,
                     type: "GET",
@@ -396,14 +396,17 @@ $trip_name = $_GET['tripname'];
         function optimizeTrip() {
             debug('Optimizing trip... ');
             if (addedLocations.length > 2) {
+                debug(JSON.stringify(addedLocations));
                 $.ajax({
                     url: "http://localhost/endpoints/optimize_trip.php",
                     type: "POST",
-                    data: addedLocations,
+                    data: JSON.stringify(addedLocations),
                     //this should cause a visual update (red or grey background for skipped?)
-                    success: function(yay) {
+                    success: function(result) {
                         // just refresh the page with the new database update. 
-                        window.location.replace(window.location.href);
+                        //window.location.replace(window.location.href);
+                        
+                        console.log(result);
                     },
                     error: function(err) {
                         console.log("Error skipping location.");
