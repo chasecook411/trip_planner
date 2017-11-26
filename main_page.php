@@ -23,22 +23,16 @@ $trip_name = $_GET['tripname'];
 
 <html>
     <head>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24&callback=initMap"
+    async defer></script>
         <script src="jquery-3.2.1.min.js"></script>
         <style>
-          /* Always set the map height explicitly to define the size of the div
-           * element that contains the map. */
-          /*
-          #map {
-            height: 100%;
-          }
-          Optional: Makes the sample page fill the window.
-          html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-          }
-          */
 
+            #map {
+                height: 500px;
+                width: 500px;
+                right: 50px;
+            }
         </style>
 
         <script>
@@ -56,8 +50,9 @@ $trip_name = $_GET['tripname'];
         $lat = 10;
         $lon = 10;
         ?>
+        var map = null;
         function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
@@ -162,6 +157,8 @@ $trip_name = $_GET['tripname'];
         function parseLocationDetails(place, priority) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
+
+
             var rating = 99;
             if (place.rating) {
                 rating = place.rating;
@@ -179,6 +176,17 @@ $trip_name = $_GET['tripname'];
                 opening_hours: place.opening_hours,
                 isSkipped: false
             }
+
+            map.setCenter({ lat: p.latitude, lng: p.longitude});
+
+            var marker = new google.maps.Marker({
+                map: map,
+                position: {
+                    lat: p.latitude,
+                    lng: p.longitude
+                },
+                title: p.name
+            });
 
             //debug('in parseLocationDetails')
             //debug('pushing locations ' + JSON.stringify(p))
@@ -281,122 +289,6 @@ $trip_name = $_GET['tripname'];
                 }
             });
         }
-
-  //       function loadList(tripId) {
-  //           //debug('loading list! for trip id ' + tripId);
-  //           $.ajax({
-  //               url: 'http://localhost/endpoints/query_attractions.php?tripid=' + tripId + '&userid=' + '<?php echo $userid; ?>', 
-  //               type: "GET",   
-  //               cache: false,
-  //               success: function(result) {
-  //                   result = JSON.parse(result);
-  //                   result.forEach(function(place) {
-  //                       $.ajax({
-  //                           url: 'http://localhost/endpoints/get_location_data.php?placeid=' + place.place_id,
-  //                           type: "GET",
-  //                           cache: false,
-  //                           success: function(goog_place) {
-  //                               var p = {
-  //                                   id: goog_place.place_id,
-  //                                   name: goog_place.name,
-  //                                   icon: goog_place.icon,
-  //                                   url: goog_place.url,
-  //                                   formatted_address: goog_place.formatted_address,
-  //                                   longitude: goog_place.geometry.location.lng,
-  //                                   latitude: goog_place.geometry.location.lat,
-  //                                   rating: goog_place.rating,                        // default value of 99
-  //                                   opening_hours: goog_place.opening_hours,
-  //                                   isSkipped: false
-  //                               }
-
-  //                               //debug('in parseLocationDetails')
-  //                               //debug('pushing locations ' + JSON.stringify(p))
-  //                               addedLocations.push(p);
-  //                               //debug('added locations', JSON.stringify(addedLocations));
-  //                               var parent = document.getElementById("itineraryList");
-  //                               addedLocations.forEach(function(result) {
-
-  //                                   console.log('adding to list', result);
-  //                                   // if the element doesn't already exist
-  //                                   // on the page, add it!
-
-  //                                   //debug(result)
-  //                                   if (!document.getElementById(result.id)) {
-  //                                       var userLocation = document.createElement("h5");
-  //                                       userLocation.setAttribute('id', result.id);
-  //                                       var node = document.createTextNode("Location: " + result.name);
-  //                                       userLocation.appendChild(node);
-  //                                       userLocation.setAttribute("class", "locationNameClass");
-  //                                       parent.appendChild(userLocation);
-
-  //                                       if (priority && priority == -1) {
-  //                                           userLocation.setAttribute('class','skipped');
-  //                                       }
-
-  //                                       var lineBreak = document.createElement("br");
-  //                                       parent.appendChild(lineBreak);
-
-  //                                       var icon = document.createElement("img");
-  //                                       icon.setAttribute("src", result.icon);
-  //                                       icon.setAttribute("class", "iconClass");
-  //                                       parent.appendChild(icon);
-
-  //                                       var lineBreak = document.createElement("br");
-  //                                       parent.appendChild(lineBreak);
-
-  //                                       if (result.url) {
-  //                                           var website = document.createElement("a");
-  //                                           node = document.createTextNode("See more information");
-  //                                           website.appendChild(node);
-  //                                           website.setAttribute("href", result.url);
-  //                                           parent.appendChild(website);
-  //                                       }
-
-
-  //                                       var lineBreak = document.createElement("br");
-  //                                       parent.appendChild(lineBreak);
-
-
-  //                                       // if the API returned hours of operation
-  //                                       if (result.opening_hours) {
-  //                                           var operation = document.createElement("p");
-  //                                           node = document.createTextNode("Hours of Operation");
-  //                                           operation.appendChild(node);
-  //                                           parent.appendChild(operation);
-
-  //                                           result.opening_hours.weekday_text.forEach(function(weekday) {
-  //                                               var hours = document.createElement("p");
-  //                                               hours.setAttribute("class", "weekdayClass");
-  //                                               node = document.createTextNode(weekday);
-  //                                               hours.appendChild(node);
-  //                                               parent.appendChild(hours)
-  //                                           })
-  //                                       } else {
-  //                                           var operation = document.createElement("p");
-  //                                           node = document.createTextNode("Hours of Operation Not Available at this time");
-  //                                           operation.appendChild(node);
-  //                                           parent.appendChild(operation);
-  //                                       }
-
-  //                                       var skipButton = document.createElement("button");
-  //                                       skipButton.setAttribute('onclick','skip(\'' + result.id + '\')');
-  //                                       var t = document.createTextNode("Skip Location");
-  //                                       skipButton.appendChild(t);
-  //                                       parent.appendChild(skipButton);
-  //                                   }
-  //                               });
-  //                           },
-  //                           error: function(err) {
-  //                               debug(err);
-  //                           }
-  //                       });
-  //                   });
-  //               },
-  //               error: function(err) {
-  //                   debug(err);
-		// 		}
-		// 	});
-		// }
 
         function loadList(tripId) {
             //debug('loading list! for trip id ' + tripId);
@@ -521,8 +413,6 @@ $trip_name = $_GET['tripname'];
             echo '<body>';
         }
     ?>
-                <div id="map">
-        </div>
 <!-- 
         Type: <input type="text" id="type" value="Bar"></br>
         Latitude: <input type="text" id="latitude" value="35"></br>
@@ -547,5 +437,7 @@ $trip_name = $_GET['tripname'];
             <button onclick="saveList()" id="save_button">Save Your List</button>
         </div>
 
+        <div id="map" onload="initMap()">
+        </div>
     </body>
 </html>
