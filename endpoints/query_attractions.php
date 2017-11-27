@@ -22,6 +22,4 @@ if (isset($_GET['tripid']) && isset($_GET['userid'])) {
     };
 	print_r(json_encode($places));
 }
-
-//ChIJ1QZkXjOHf4gRKEWuxnvX85g
 ?>

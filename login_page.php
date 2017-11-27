@@ -11,7 +11,7 @@
             // should receive data from PHP to launch app
             userData = JSON.parse(userData);
 
-            window.location.assign("http://localhost/main_page.php?debug=true&userid=" + userData.user_id);
+            window.location.assign("http://localhost/my_trips_page.php?userid=" + userData.user_id);
         }
 
         function login() {
@@ -81,7 +81,7 @@
 
     <span>Enter password:</span>
     <input type="password" id="lo_password"></br>
-    <button onclick="login()">Login</button></br>
+    <button onclick="login()" id="login_button">Login</button></br>
     </div></br>
 
     <div id="signup">
@@ -100,7 +100,7 @@
     <span>Confirm Password:</span>
     <input type="password" id="s_confirm_password"></br>
 
-    <button onclick="signup()">Signup</button></br>
+    <button onclick="signup()" id="signup_button">Signup</button></br>
     </div>
 </body>
 

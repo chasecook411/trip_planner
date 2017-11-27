@@ -23,22 +23,16 @@ $trip_name = $_GET['tripname'];
 
 <html>
     <head>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24&callback=initMap"
+    async defer></script>
         <script src="jquery-3.2.1.min.js"></script>
         <style>
-          /* Always set the map height explicitly to define the size of the div
-           * element that contains the map. */
-          /*
-          #map {
-            height: 100%;
-          }
-          Optional: Makes the sample page fill the window.
-          html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-          }
-          */
 
+            #map {
+                height: 500px;
+                width: 500px;
+                right: 50px;
+            }
         </style>
 
         <script>
@@ -56,8 +50,11 @@ $trip_name = $_GET['tripname'];
         $lat = 10;
         $lon = 10;
         ?>
+        var map = null;
+        var totalDistance = 0;
+
         function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
@@ -132,6 +129,7 @@ $trip_name = $_GET['tripname'];
                 //debug(locationId);
                 //addButton.setAttribute("id", locationId);
                 addButton.setAttribute('onclick','addLocation(\'' + locationId + '\')');
+                addButton.setAttribute('name', locationId);
                 node = document.createTextNode("Add Location");
                 addButton.appendChild(node);
 
@@ -149,6 +147,7 @@ $trip_name = $_GET['tripname'];
                 url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId,
                 type: "GET",
                 cache: false,
+                async: false,
                 success: function(result) {
                     parseLocationDetails(result, priority);
                 },
@@ -161,6 +160,8 @@ $trip_name = $_GET['tripname'];
         function parseLocationDetails(place, priority) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
+
+
             var rating = 99;
             if (place.rating) {
                 rating = place.rating;
@@ -179,82 +180,124 @@ $trip_name = $_GET['tripname'];
                 isSkipped: false
             }
 
-            //debug('in parseLocationDetails')
-            //debug('pushing locations ' + JSON.stringify(p))
-            addedLocations.push(p);
-            //debug('added locations', JSON.stringify(addedLocations));
-            var parent = document.getElementById("itineraryList");
-            addedLocations.forEach(function(result) {
+            map.setCenter({ lat: p.latitude, lng: p.longitude});
 
-                console.log('adding to list', result);
-                // if the element doesn't already exist
-                // on the page, add it!
+            var marker = new google.maps.Marker({
+                map: map,
+                position: {
+                    lat: p.latitude,
+                    lng: p.longitude
+                },
+                title: p.name
+            });
+
+            addedLocations.push(p);
+
+            // at this point, we can consider this place to be the last in the list? 
+            // let's assume that and try to build the total distance. 
+            if (addedLocations.length > 1) {
+                //debug('length of array greater than 1');
+                var orig = addedLocations[addedLocations.length - 1].id;
+                var dest = addedLocations[addedLocations.length - 2].id;
+                debug('http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest);
+                $.ajax({
+                    url: 'http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest,
+                    type: "GET",
+                    cache: false,
+                    //async: false,
+                    success: function(result) {
+                        parseDistanceVal(result);
+                    },
+                    error: function(err) {
+                        debug(err);
+                    }
+                });
+            }
+
+            var parent = document.getElementById("itineraryList");
+            // addedLocations.forEach(function(result) {
+
+            //     console.log('adding to list', result);
+            //     // if the element doesn't already exist
+            //     // on the page, add it!
 
                 //debug(result)
-                if (!document.getElementById(result.id)) {
-                    var userLocation = document.createElement("h5");
-                    userLocation.setAttribute('id', result.id);
-                    var node = document.createTextNode("Location: " + result.name);
-                    userLocation.appendChild(node);
-                    userLocation.setAttribute("class", "locationNameClass");
-                    parent.appendChild(userLocation);
 
-                    if (priority && priority == -1) {
-                        userLocation.setAttribute('class','skipped');
-                    }
+            // element doesn't already exist
+            //debug('Element does not exist!! ' + JSON.stringify(p.name));
 
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
+            if (!document.getElementById(p.id)) {
+                var userLocation = document.createElement("h5");
+                userLocation.setAttribute('id', p.id);
+                var node = document.createTextNode("Location: " + p.name);
+                userLocation.appendChild(node);
+                userLocation.setAttribute("class", "locationNameClass");
+                parent.appendChild(userLocation);
 
-                    var icon = document.createElement("img");
-                    icon.setAttribute("src", result.icon);
-                    icon.setAttribute("class", "iconClass");
-                    parent.appendChild(icon);
-
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
-
-                    if (result.url) {
-                        var website = document.createElement("a");
-                        node = document.createTextNode("See more information");
-                        website.appendChild(node);
-                        website.setAttribute("href", result.url);
-                        parent.appendChild(website);
-                    }
-
-
-                    var lineBreak = document.createElement("br");
-                    parent.appendChild(lineBreak);
-
-
-                    // if the API returned hours of operation
-                    if (result.opening_hours) {
-                        var operation = document.createElement("p");
-                        node = document.createTextNode("Hours of Operation");
-                        operation.appendChild(node);
-                        parent.appendChild(operation);
-
-                        result.opening_hours.weekday_text.forEach(function(weekday) {
-                            var hours = document.createElement("p");
-                            hours.setAttribute("class", "weekdayClass");
-                            node = document.createTextNode(weekday);
-                            hours.appendChild(node);
-                            parent.appendChild(hours)
-                        })
-                    } else {
-                        var operation = document.createElement("p");
-                        node = document.createTextNode("Hours of Operation Not Available at this time");
-                        operation.appendChild(node);
-                        parent.appendChild(operation);
-                    }
-
-                    var skipButton = document.createElement("button");
-					skipButton.setAttribute('onclick','skip(\'' + result.id + '\')');
-					var t = document.createTextNode("Skip Location");
-                    skipButton.appendChild(t);
-                    parent.appendChild(skipButton);
+                if (priority && priority == -1) {
+                    userLocation.setAttribute('class','skipped');
                 }
-            });
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+                var icon = document.createElement("img");
+                icon.setAttribute("src", p.icon);
+                icon.setAttribute("class", "iconClass");
+                parent.appendChild(icon);
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+                if (p.url) {
+                    var website = document.createElement("a");
+                    node = document.createTextNode("See more information");
+                    website.appendChild(node);
+                    website.setAttribute("href", p.url);
+                    parent.appendChild(website);
+                }
+
+
+                var lineBreak = document.createElement("br");
+                parent.appendChild(lineBreak);
+
+
+                // if the API returned hours of operation
+                if (p.opening_hours) {
+                    var operation = document.createElement("p");
+                    node = document.createTextNode("Hours of Operation");
+                    operation.appendChild(node);
+                    parent.appendChild(operation);
+
+                    p.opening_hours.weekday_text.forEach(function(weekday) {
+                        var hours = document.createElement("p");
+                        hours.setAttribute("class", "weekdayClass");
+                        node = document.createTextNode(weekday);
+                        hours.appendChild(node);
+                        parent.appendChild(hours)
+                    })
+                } else {
+                    var operation = document.createElement("p");
+                    node = document.createTextNode("Hours of Operation Not Available at this time");
+                    operation.appendChild(node);
+                    parent.appendChild(operation);
+                }
+
+                var skipButton = document.createElement("button");
+				skipButton.setAttribute('onclick','skip(\'' + p.id + '\')');
+				var t = document.createTextNode("Skip Location");
+                skipButton.appendChild(t);
+                parent.appendChild(skipButton);
+            }
+            //});
+        }
+
+        function parseDistanceVal(result) {
+            result = JSON.parse(result).rows[0].elements[0].distance;
+            totalDistance += result.value;
+            console.log(result);
+
+            document.getElementById('total').innerHTML = (totalDistance * 0.0006) + " miles" ;
         }
 
         function saveList() {
@@ -295,9 +338,9 @@ $trip_name = $_GET['tripname'];
                 },
                 error: function(err) {
                     debug(err);
-				}
-			});
-		}
+                }
+            });
+        }
 
         // This skips an attraction on the list, but does not permanently remove it.
         // A skipped attraction is not considered when computing a route.
@@ -348,6 +391,68 @@ $trip_name = $_GET['tripname'];
                     }
                 });
             }
+        }
+
+        function parseShortestPath() {
+
+        }
+
+        function optimizeTrip() {
+            debug('Optimizing trip... ');
+            if (addedLocations.length > 2) {
+                debug(JSON.stringify(addedLocations));
+                $.ajax({
+                    url: "http://localhost/endpoints/optimize_trip.php",
+                    type: "POST",
+                    data: JSON.stringify(addedLocations),
+                    //this should cause a visual update (red or grey background for skipped?)
+                    success: function(result) {
+                        // just refresh the page with the new database update. 
+                        //window.location.replace(window.location.href);
+                        
+
+                        result = JSON.parse(result);
+                        var pids = {};
+                        
+                        // gapi doesn't return the placeids in their order
+                        // need to keep track of that. 
+                        addedLocations.forEach(function(place) {
+                            pids[place.id] = {};
+                        });
+
+                        console.log(pids);
+
+                        var rows = result.rows;
+                        var keys = Object.keys(pids);
+                        for (var i = 0; i < keys.length; i++) {
+                           for (var j = 0; j < keys.length; j++) {
+                              // ignore distance to self
+                              if (keys[i] != keys[j]) {
+                                pids[keys[i]][keys[j]] = rows[i].elements[j].distance.value;
+                              }
+                           }
+                        }
+                        
+
+                        console.log('The shortest path is!!!');
+                        $.ajax({
+                            url: "http://localhost/endpoints/relay.php",
+                            type: "POST",
+                            data: JSON.stringify(pids),
+                            //this should cause a visual update (red or grey background for skipped?)
+                            success: function(result) {
+                                console.log(result);
+                            }, 
+                            error: function(err) {
+                                console.log('err finding shortest path', err);
+                            }
+                        });
+                    },
+                    error: function(err) {
+                        console.log("Error skipping location.");
+                    }
+                });
+            } 
         }
 
         </script>
@@ -404,18 +509,18 @@ $trip_name = $_GET['tripname'];
             echo '<body>';
         }
     ?>
-                <div id="map">
-        </div>
 <!-- 
         Type: <input type="text" id="type" value="Bar"></br>
         Latitude: <input type="text" id="latitude" value="35"></br>
         Longitude: <input type="text" id="longitude" value="-90"></br>
         Radius: <input type="text" id="radius" value="1000"></br> -->
 
-        Search Places: <input type="text" id="search" value="Foo"></br>
+        Search Places: <input type="text" id="search" value="Tourist Attractions"></br>
         City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
         Radius (miles): <input type="text" id="radius" value="10"></br>
-        <button onclick="getLocations()">Click me</button></br>
+        <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
+        Total Distance: <span id="total"></span><br>
+        <button onclick="optimizeTrip()" id="optimize_button">Optimize</button>
         <div id="locations">
             <h3>Search Results</h3>
         </div>
@@ -427,8 +532,10 @@ $trip_name = $_GET['tripname'];
         </div>
         <div id="svbtn">
             List Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
-            <button onclick="saveList()">"Save Your List"</button>
+            <button onclick="saveList()" id="save_button">Save Your List</button>
         </div>
 
+        <div id="map" onload="initMap()">
+        </div>
     </body>
 </html>
