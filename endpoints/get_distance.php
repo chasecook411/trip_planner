@@ -10,7 +10,6 @@ key — Your application's API key. This key identifies your application for pur
 
 $key = 'AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
 if (isset($_GET['origplaceid']) && isset($_GET['destplaceid'])) {
-    $placeid = $_GET['placeid'];
     $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:' . $_GET['origplaceid'] . '&destinations=place_id:' . $_GET['destplaceid'] . '&key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
     //echo $url;
     $ch = curl_init($url);

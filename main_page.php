@@ -393,6 +393,10 @@ $trip_name = $_GET['tripname'];
             }
         }
 
+        function parseShortestPath() {
+
+        }
+
         function optimizeTrip() {
             debug('Optimizing trip... ');
             if (addedLocations.length > 2) {
@@ -406,7 +410,43 @@ $trip_name = $_GET['tripname'];
                         // just refresh the page with the new database update. 
                         //window.location.replace(window.location.href);
                         
-                        console.log(result);
+
+                        result = JSON.parse(result);
+                        var pids = {};
+                        
+                        // gapi doesn't return the placeids in their order
+                        // need to keep track of that. 
+                        addedLocations.forEach(function(place) {
+                            pids[place.id] = {};
+                        });
+
+                        console.log(pids);
+
+                        var rows = result.rows;
+                        var keys = Object.keys(pids);
+                        for (var i = 0; i < keys.length; i++) {
+                           for (var j = 0; j < keys.length; j++) {
+                              // ignore distance to self
+                              if (keys[i] != keys[j]) {
+                                pids[keys[i]][keys[j]] = rows[i].elements[j].distance.value;
+                              }
+                           }
+                        }
+                        
+
+                        console.log('The shortest path is!!!');
+                        $.ajax({
+                            url: "http://localhost/endpoints/relay.php",
+                            type: "POST",
+                            data: JSON.stringify(pids),
+                            //this should cause a visual update (red or grey background for skipped?)
+                            success: function(result) {
+                                console.log(result);
+                            }, 
+                            error: function(err) {
+                                console.log('err finding shortest path', err);
+                            }
+                        });
                     },
                     error: function(err) {
                         console.log("Error skipping location.");
