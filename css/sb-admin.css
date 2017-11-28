@@ -168,7 +168,7 @@ body.fixed-nav {
         padding: 1em; } }
 
 #mainNav.fixed-top.navbar-dark .sidenav-toggler {
-  background-color: #212529; }
+  background-color: white; }
   #mainNav.fixed-top.navbar-dark .sidenav-toggler a i {
     color: #adb5bd; }
 
