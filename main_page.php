@@ -195,11 +195,11 @@ $trip_name = $_GET['tripname'];
 
             // at this point, we can consider this place to be the last in the list? 
             // let's assume that and try to build the total distance. 
-
             if (addedLocations.length > 1) {
                 //debug('length of array greater than 1');
                 var orig = addedLocations[addedLocations.length - 1].id;
                 var dest = addedLocations[addedLocations.length - 2].id;
+                debug('http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest);
                 $.ajax({
                     url: 'http://localhost/endpoints/get_distance.php?origplaceid=' + orig + '&destplaceid=' + dest,
                     type: "GET",
@@ -396,14 +396,86 @@ $trip_name = $_GET['tripname'];
         function optimizeTrip() {
             debug('Optimizing trip... ');
             if (addedLocations.length > 2) {
+                debug(JSON.stringify(addedLocations));
                 $.ajax({
                     url: "http://localhost/endpoints/optimize_trip.php",
                     type: "POST",
-                    data: addedLocations,
+                    data: JSON.stringify(addedLocations),
                     //this should cause a visual update (red or grey background for skipped?)
-                    success: function(yay) {
+                    success: function(result) {
                         // just refresh the page with the new database update. 
-                        window.location.replace(window.location.href);
+                        //window.location.replace(window.location.href);
+                        
+
+                        result = JSON.parse(result);
+                        var pids = {};
+                        
+                        // gapi doesn't return the placeids in their order
+                        // need to keep track of that. 
+                        addedLocations.forEach(function(place) {
+                            pids[place.id] = {};
+                        });
+
+                        console.log(pids);
+
+                        var rows = result.rows;
+                        var keys = Object.keys(pids);
+                        for (var i = 0; i < keys.length; i++) {
+                           for (var j = 0; j < keys.length; j++) {
+                              // ignore distance to self
+                              if (keys[i] != keys[j]) {
+                                pids[keys[i]][keys[j]] = rows[i].elements[j].distance.value;
+                              }
+                           }
+                        }
+                        
+
+                        console.log('The shortest path is!!!');
+                        $.ajax({
+                            url: "http://localhost/endpoints/relay.php",
+                            type: "POST",
+                            data: JSON.stringify(pids),
+                            success: function(result) {
+                                result = result.substring(1, result.length-1)
+                                console.log(result);
+                                var optimizedObject = "";
+                                for (var i = 0; i < result.length; i++) {
+                                    if (result[i] != "\\") {
+                                        optimizedObject += result[i];
+                                    }
+                                }
+                                
+                                optimizedObject = JSON.parse(optimizedObject);
+                                
+                                <?php
+                                 if (isset($_GET['tripid'])) {
+                                    echo 'optimizedObject.tripId = ' . $_GET['tripid'] . ";"; 
+                                 } else {
+                                    echo 'optimizedObject.tripId = 99999;'; 
+                                 }
+                                
+                                ?>
+                                console.log(JSON.stringify(optimizedObject));
+
+                                $.ajax({
+                                    url: "http://localhost/endpoints/relay.php",
+                                    type: "POST",
+                                    data: JSON.stringify(optimizedObject),
+                                    success: function(result) {
+                                        console.log(result);
+                                        window.location.replace(window.location.href);
+                                    },
+                                    error: function(err) {
+                                        console.log(err);
+                                    }
+                                });
+                                // now I need to update the db with the new list.
+
+                            }, 
+                            error: function(err) {
+                                console.log('err finding shortest path', err);
+                            }
+                        });
                     },
                     error: function(err) {
                         console.log("Error skipping location.");
