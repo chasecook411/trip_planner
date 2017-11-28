@@ -47,15 +47,15 @@ $trip_name = $_GET['tripname'];
         }
 
         <?php
-        $lat = 10;
-        $lon = 10;
+        $lat = 35.1189;
+        $lon = -89.9368;
         ?>
         var map = null;
         var totalDistance = 0;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 8,
+                zoom: 10,
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
         }
@@ -86,7 +86,7 @@ $trip_name = $_GET['tripname'];
 
         // expects an array of locations
         function parseLocations(locations) {
-            debug(locations);
+            //debug(locations);
             locations = JSON.parse(locations);
             locations = locations.results;
             var parent = document.getElementById("locations");
@@ -457,6 +457,7 @@ $trip_name = $_GET['tripname'];
 
         //locations: array of locations
         function sortByRating (locations) {
+            locations.sort(function(a,b){return b.rating - a.rating})
 
         }
 
