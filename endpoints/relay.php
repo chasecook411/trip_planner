@@ -10,7 +10,7 @@
 		
 	    $response = curl_exec($ch);
 	    curl_close($ch);
-
+	    
 	    // ??? putting substring here because I'm getting a 
 	    // random '1' at the end of my response data...
 	    print_r(substr($response, 0, count($response) - 2));
