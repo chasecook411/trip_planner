@@ -86,7 +86,7 @@ $trip_name = $_GET['tripname'];
 
         // expects an array of locations
         function parseLocations(locations) {
-            //debug(locations);
+            debug(locations);
             locations = JSON.parse(locations);
             locations = locations.results;
             var parent = document.getElementById("locations");
@@ -453,6 +453,11 @@ $trip_name = $_GET['tripname'];
                     }
                 });
             } 
+        }
+
+        //locations: array of locations
+        function sortByRating (locations) {
+
         }
 
         </script>
