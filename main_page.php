@@ -409,10 +409,6 @@ if (isset($trip_name)) {
             }
         }
 
-        function parseShortestPath() {
-
-        }
-
         function optimizeTrip() {
             debug('Optimizing trip... ');
             if (addedLocations.length > 2) {
@@ -455,9 +451,42 @@ if (isset($trip_name)) {
                             url: "http://localhost/endpoints/relay.php",
                             type: "POST",
                             data: JSON.stringify(pids),
-                            //this should cause a visual update (red or grey background for skipped?)
                             success: function(result) {
+                                result = result.substring(1, result.length-1)
                                 console.log(result);
+                                var optimizedObject = "";
+                                for (var i = 0; i < result.length; i++) {
+                                    if (result[i] != "\\") {
+                                        optimizedObject += result[i];
+                                    }
+                                }
+                                
+                                optimizedObject = JSON.parse(optimizedObject);
+                                
+                                <?php
+                                 if (isset($_GET['tripid'])) {
+                                    echo 'optimizedObject.tripId = ' . $_GET['tripid'] . ";"; 
+                                 } else {
+                                    echo 'optimizedObject.tripId = 99999;'; 
+                                 }
+                                
+                                ?>
+                                console.log(JSON.stringify(optimizedObject));
+
+                                $.ajax({
+                                    url: "http://localhost/endpoints/relay.php",
+                                    type: "POST",
+                                    data: JSON.stringify(optimizedObject),
+                                    success: function(result) {
+                                        console.log(result);
+                                        window.location.replace(window.location.href);
+                                    },
+                                    error: function(err) {
+                                        console.log(err);
+                                    }
+                                });
+                                // now I need to update the db with the new list.
+
                             }, 
                             error: function(err) {
                                 console.log('err finding shortest path', err);

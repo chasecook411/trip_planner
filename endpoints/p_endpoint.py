@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-
+import json
 app = Flask(__name__)
 api = Api(app)
 
@@ -146,8 +146,11 @@ class Optimize(Resource):
     def put(self):
         data = request.get_json(force=True)
         print('Calculating shortest path')
-        shortest_array = shortest_path(data)
-        return shortest_array
+        shortest_array = list(shortest_path(data))
+        optimized_object = {
+        	"trip": shortest_array
+        }
+        return json.dumps(optimized_object)
 
 api.add_resource(Optimize, '/optimize')
 
