@@ -35,6 +35,10 @@ def distinct_indicies(dictionary):
 
     # for each location in sub1
     # add it to our list if its not already
+    # print('SICT', dictionary)
+    # if ('tripId' in dictionary):
+    # 	print('Found tripId', "deleting")
+    	
     for place_one in dictionary:
         if place_one not in cache:
             cache.append(place_one)
@@ -43,9 +47,13 @@ def distinct_indicies(dictionary):
         # add it to our list if its not already
         # **it should've been caught in sub1 if 
         # its valid input. **
-        for place_two in dictionary[place_one]:
-            if place_two not in cache:
-                cache.append(place_two)
+        #print('DICT', dictionary[place_one])
+        try:
+	        for place_two in dictionary[place_one]:
+	            if place_two not in cache:
+	                cache.append(place_two)
+        except Exception as e:
+        	print(str(e))
     return cache
 
 # returns all permutations for a distinct
@@ -88,7 +96,7 @@ def shortest_path(d):
         # if we find a distance shorter than min
         # let's replace it. 
         if temp < min:
-            print("Got a minimum!", temp)
+            #print("Got a minimum!", temp)
             # print out our list for confirmation
             minArray = p
     return minArray
@@ -145,8 +153,16 @@ def shortest_path(d):
 class Optimize(Resource):
     def put(self):
         data = request.get_json(force=True)
-        print('Calculating shortest path')
+        
+        # print('Calculating shortest path')
+        # if ('tripId' in data):
+        #     print('Found tripid')
+        #     del data['tripId']
+
+        # print("THIS IS THE DATA AFTER DELETE", data)
         shortest_array = list(shortest_path(data))
+
+
         optimized_object = {
         	"trip": shortest_array
         }

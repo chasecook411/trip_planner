@@ -27,7 +27,7 @@ if (isset($trip_name)) {
 
 <html>
     <head>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24&callback=initMap"
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk&callback=initMap"
     async defer></script>
         <script src="jquery-3.2.1.min.js"></script>
         <style>
@@ -473,19 +473,20 @@ if (isset($trip_name)) {
                                 ?>
                                 console.log(JSON.stringify(optimizedObject));
 
+                                // now I need to update the db with the new list.
                                 $.ajax({
-                                    url: "http://localhost/endpoints/relay.php",
+                                    url: "http://localhost/endpoints/update_trip_by_id.php",
                                     type: "POST",
                                     data: JSON.stringify(optimizedObject),
                                     success: function(result) {
                                         console.log(result);
+                                        // we'll just refresh the page to force a redraw
                                         window.location.replace(window.location.href);
                                     },
                                     error: function(err) {
                                         console.log(err);
                                     }
                                 });
-                                // now I need to update the db with the new list.
 
                             }, 
                             error: function(err) {

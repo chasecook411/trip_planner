@@ -1,6 +1,6 @@
 <?php
 
-$conn = new mysqli('localhost', 'root', 'root', 'lost_db');
+$conn = new mysqli('localhost', 'root', 'root', 'lostdb');
 if ($conn->connect_error) {
     die("Cound not connect: " . $conn->connect_error);
 }
@@ -31,10 +31,10 @@ if ($client_data) {
 
             if ($res->num_rows > 0) {
                 // exists in database, reset priorty, in case its changed
-                if ($attractions->isSkipped == false) {
-                    $update = 'update attractions set priority = ' . $i . ' where address = "' . $attractions[$i]->formatted_address . '";';
-                }
-                $res = $conn->query($update);
+                //if ($attractions->isSkipped == false) {
+                //    $update = 'update attractions set priority = ' . $i . ' where address = "' . $attractions[$i]->formatted_address . '";';
+                //}
+                //$res = $conn->query($update);
             } else {
                 // doesn't exist in database, insert it
                 $rating = "NULL";
