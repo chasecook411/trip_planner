@@ -467,6 +467,7 @@ if (isset($_GET['tripname'])) {
                         
 
                         console.log('The shortest path is!!!');
+                        console.log(JSON.stringify(pids));
                         $.ajax({
                             url: "http://localhost/endpoints/relay.php",
                             type: "POST",
