@@ -16,7 +16,7 @@
 $key = "<check discord>";
 
 $userid = $_GET['userid'];
-if (isset($trip_name)) {
+if (isset($_GET['tripname'])) {
     $trip_name = $_GET['tripname'];
 } else {
     $trip_name = "";
@@ -42,6 +42,7 @@ if (isset($trip_name)) {
         <script>
 
         var addedLocations = [];
+        var tripCords = [];
         function debug(str) {
             <?php
             if (isset($_GET['debug'])) {
@@ -63,6 +64,24 @@ if (isset($trip_name)) {
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
         }
+
+        //called in tail end of addLocation() after parseLocationDetails() has been called
+        //Could be moved to better spot
+        function tracePath() {
+            var coordinates = []
+            //add the coordinates for every location in addedLocations into coordinates array
+            addedLocations.forEach(function(p) { coordinates.push({lat: p.latitude, lng: p.longitude})});
+            //creates the polyline with the path specified by coordinates array
+            var tracedPath = new google.maps.Polyline({
+                path: coordinates,
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            //give the map to the polyline object
+            tracedPath.setMap(map);
+         }
 
         function getLocations() {
             var query = document.getElementById('search').value;
@@ -164,12 +183,12 @@ if (isset($trip_name)) {
                     debug(err);
                 }
             });
+            tracePath();
         }
 
         function parseLocationDetails(place, priority) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
-
 
             var rating = 99;
             if (place.rating) {
@@ -356,6 +375,7 @@ if (isset($trip_name)) {
                     debug(err);
                 }
             });
+
         }
 
         // This skips an attraction on the list, but does not permanently remove it.
