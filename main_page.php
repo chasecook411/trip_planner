@@ -16,7 +16,11 @@
 $key = "<check discord>";
 
 $userid = $_GET['userid'];
-$trip_name = $_GET['tripname'];
+if (isset($trip_name)) {
+    $trip_name = $_GET['tripname'];
+} else {
+    $trip_name = "";
+}
 ?>
 
 
@@ -47,15 +51,15 @@ $trip_name = $_GET['tripname'];
         }
 
         <?php
-        $lat = 10;
-        $lon = 10;
+        $lat = 35.1189;
+        $lon = -89.9368;
         ?>
         var map = null;
         var totalDistance = 0;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 8,
+                zoom: 11,
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
         }
@@ -95,6 +99,11 @@ $trip_name = $_GET['tripname'];
                 parent.removeChild(parent.lastChild);
             }
 
+            var sort = document.getElementById("sortOrder");
+
+            if (sort.selectedIndex === 1) {
+                sortByRating(locations);
+            }
 
             // we deleted the h4, so we need to put it back
             var h = document.createElement("h3");
@@ -300,9 +309,16 @@ $trip_name = $_GET['tripname'];
             document.getElementById('total').innerHTML = (totalDistance * 0.0006) + " miles" ;
         }
 
+        //saves the list trip to database
+        //stop execution and alert user if trip name is not set
         function saveList() {
             debug(addedLocations);
             var listName = document.getElementById('list_name').value;
+            console.log(listName);
+            if (listName === "") { 
+                alert("You must enter a name for your trip!");
+                return;
+            }
             var tripObject = {
                 'userid': <?php echo $userid; ?>,
                 'trip_name': listName,
@@ -484,6 +500,11 @@ $trip_name = $_GET['tripname'];
             } 
         }
 
+        //locations: array of locations
+        function sortByRating (locations) {
+            locations.sort(function(a,b){return b.rating - a.rating})
+        }
+
         </script>
 
 
@@ -547,9 +568,15 @@ $trip_name = $_GET['tripname'];
         Search Places: <input type="text" id="search" value="Tourist Attractions"></br>
         City/State: <input type="text" id="cityState" value="Memphis, TN"></br>
         Radius (miles): <input type="text" id="radius" value="10"></br>
+        
+        Order of Results: <select id="sortOrder">
+            <option value="popularity" selected>Popularity</option>
+            <option value="rating">Rating</option>
+        </select></br>
+
         <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
         Total Distance: <span id="total"></span><br>
-        <button onclick="optimizeTrip()" id="optimize_button">Optimize</button>
+        <button onclick="optimizeTrip()" id="optimize_button">Optimize Your Trip</button>
         <div id="locations">
             <h3>Search Results</h3>
         </div>
@@ -560,8 +587,8 @@ $trip_name = $_GET['tripname'];
             <h3>Added Locations</h3>
         </div>
         <div id="svbtn">
-            List Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
-            <button onclick="saveList()" id="save_button">Save Your List</button>
+            Trip Name: <input type="text" id="list_name" value="<?php echo $trip_name; ?>"></input>
+            <button onclick="saveList()" id="save_button">Save Your Trip</button>
         </div>
 
         <div id="map" onload="initMap()">
