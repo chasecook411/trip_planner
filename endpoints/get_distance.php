@@ -8,7 +8,7 @@ query — The text string on which to search, for example: "restaurant" or "123 
 key — Your application's API key. This key identifies your application for purposes of quota management and so that places added from your application are made immediately available to your app. See Get a key for Google Places API Web Service to see how to create an API Project and obtain your key.
 */
 
-$key = 'AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
+$key = 'AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk';
 if (isset($_GET['origplaceid']) && isset($_GET['destplaceid'])) {
     $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:' . $_GET['origplaceid'] . '&destinations=place_id:' . $_GET['destplaceid'] . '&key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
     //echo $url;
