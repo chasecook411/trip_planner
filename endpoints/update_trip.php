@@ -1,6 +1,6 @@
 <?php
 
-$conn = new mysqli('localhost', 'root', 'root', 'lostdb');
+$conn = new mysqli('localhost', 'root', 'root', 'lost_db');
 if ($conn->connect_error) {
     die("Cound not connect: " . $conn->connect_error);
 }
@@ -25,7 +25,7 @@ if ($client_data) {
 
         $result = $conn->query($query);
         for ($i = 0; $i < count($attractions); $i++) {
-            $query = 'select * from attractions where address = "' . $attractions[$i]->formatted_address . '";';
+            $query = 'select * from attractions where address = "' . $attractions[$i]->formatted_address . '" and trip_id = ' . $trip_id . ';';
             //echo $query;
             $res = $conn->query($query);
 
@@ -42,7 +42,8 @@ if ($client_data) {
                     $rating = $attractions[$i]->rating;
                 }
                 $insert = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $rating . ', "' . $attractions[$i]->id . '");';
-                echo $insert;
+              //  echo $insert;
+                //echo $insert;
                 $res = $conn->query($insert);
             }
         }
@@ -94,46 +95,21 @@ if ($client_data) {
                 $rating = $attractions[$i]->rating;
             }
             $query = 'insert into attractions values(null, ' . $trip_id . ', ' . $i . ', "' . $attractions[$i]->name . '", "' . $attractions[$i]->formatted_address . '", ' . $attractions[$i]->longitude . ', ' . $attractions[$i]->latitude . ', 5, ' . $rating . ', "' . $attractions[$i]->id . '");';
-            echo $query;
+            //echo $query;
             $result = $conn->query($query);  
             //print_r('Trip added!');  
-        }
-        
+        }   
+
+        // $query = "select * from trips where trip_name = " . $trip_object->trip_name . ";";
+
+        // $result = $conn->query($query);
+        // $obj = new stdClass();
+        // while($row = $result->fetch_assoc()) {
+        //     $obj->trip_id = $row['trip_id'];
+        // }
+
+        print_r("{ \"trip_id\" : \"" . $trip_id . "\" } ");
     }
-    //$userid = $trip['user'];
-    //echo $userid;
-
-    /*
-
-    [
-        {
-            "tripid": "3",
-            "address": "123 Front St.",
-            "name": "law school"
-        },
-        {
-            "tripid": "3",
-            "address": "123 Reverse St.",
-            "name": "stupid school"
-            ""
-        },
-        {
-            "tripid": "3",
-            "address": "123 Back St.",
-            "name": "memphis school"
-        }
-
-    ]
-
-    */
-    // for each location in trip, update it in the database (in that order)
-    // for ($i = 0; $i < count($trip); $i++) {
-
-    //     //$query = "INSERT INTO trips values (null, ". $trip[$i]['tripid'] . "," . $i . ", " . $trip[$i]['address'] . ", " . $trip[$i]['name'] . ");";
-
-    //     //$result = $conn->query($query);
-    //     //print_r($trip[$i]);
-    // }
 }
 $conn->close();
 ?>

@@ -95,11 +95,11 @@ def shortest_path(d):
         temp = total_dist(p, d)
         # if we find a distance shorter than min
         # let's replace it. 
-        print(p,temp)
+        # print(p,temp)
         if temp < min:
-            print("Got a minimum!", temp)
+            #print("Got a minimum!", temp)
             # print out our list for confirmation
-            print(p)
+            #print(p)
             min = temp
             minArray = p
     #print(minArray)

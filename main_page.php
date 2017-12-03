@@ -351,7 +351,12 @@ if (isset($_GET['tripname'])) {
                 contentType: "application/json",
                 success: function(result) {
                     debug('added list to db');
-                    debug(JSON.stringify(result));
+                    if (result) {
+                        var tripData = JSON.parse(result);
+                        if (tripData && tripData.trip_id) {
+                            window.location.replace(window.location.href + '&tripid=' + tripData.trip_id);
+                        }    
+                    }
                 },
                 error: function(err) {
                     console.log('Error adding list');

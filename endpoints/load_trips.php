@@ -1,6 +1,6 @@
 <?php
 
-$conn = new mysqli('localhost', 'root', 'root', 'lostdb');
+$conn = new mysqli('localhost', 'root', 'root', 'lost_db');
 if ($conn->connect_error) {
 	die("Could not connect:" . $conn->connect_error);
 }
