@@ -23,13 +23,11 @@ if (isset($_GET['tripname'])) {
 }
 ?>
 
-
-
 <html>
     <head>
+        <script src="jquery-3.2.1.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk&callback=initMap"
     async defer></script>
-        <script src="jquery-3.2.1.min.js"></script>
         <style>
 
             #map {
@@ -56,7 +54,9 @@ if (isset($_GET['tripname'])) {
         $lon = -89.9368;
         ?>
         var map = null;
+        var markers = [];
         var totalDistance = 0;
+        var tracedPath = null;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -68,11 +68,20 @@ if (isset($_GET['tripname'])) {
         //called in tail end of addLocation() after parseLocationDetails() has been called
         //Could be moved to better spot
         function tracePath() {
-            var coordinates = []
+            var coordinates = [];
             //add the coordinates for every location in addedLocations into coordinates array
-            addedLocations.forEach(function(p) { coordinates.push({lat: p.latitude, lng: p.longitude})});
+            addedLocations.forEach(function(p) {
+                if(!p.isSkipped) {
+                    coordinates.push({lat: p.latitude, lng: p.longitude})
+                }
+            });
+
+            // if a path is already on the map, remove it before drawing the new one.
+            if(tracedPath != null) {
+                tracedPath.setMap(null);
+            }
             //creates the polyline with the path specified by coordinates array
-            var tracedPath = new google.maps.Polyline({
+            tracedPath = new google.maps.Polyline({
                 path: coordinates,
                 geodesic: true,
                 strokeColor: '#0000FF',
@@ -208,6 +217,11 @@ if (isset($_GET['tripname'])) {
                 isSkipped: false
             }
 
+            // console.log("priority check: " + priority);
+            if(priority && priority == 127) {
+                p.isSkipped = true;
+            }
+
             map.setCenter({ lat: p.latitude, lng: p.longitude});
 
             var marker = new google.maps.Marker({
@@ -216,9 +230,13 @@ if (isset($_GET['tripname'])) {
                     lat: p.latitude,
                     lng: p.longitude
                 },
-                title: p.name
+                title: p.name,
+                id: p.id
             });
-
+            if(p.isSkipped) {
+                marker.setVisible(false);
+            }
+            markers.push(marker);
             addedLocations.push(p);
 
             // at this point, we can consider this place to be the last in the list? 
@@ -261,8 +279,9 @@ if (isset($_GET['tripname'])) {
                 userLocation.appendChild(node);
                 userLocation.setAttribute("class", "locationNameClass");
                 parent.appendChild(userLocation);
-
-                if (priority && priority == -1) {
+                
+                //console.log("priority for " + p.name " is " + priority);
+                if (priority && priority == 127) {
                     userLocation.setAttribute('class','skipped');
                 }
 
@@ -373,6 +392,7 @@ if (isset($_GET['tripname'])) {
                 success: function(result) {
                     result = JSON.parse(result);
                     result.forEach(function(place) {
+                        //console.log("p.id: " + place.place_id + " priority " + place.priority);
                         addLocation(place.place_id, place.priority);
                     });
                 },
@@ -401,9 +421,12 @@ if (isset($_GET['tripname'])) {
             if(index1 >= 0) {
 				// place.id from attraction in array
                 var placeId = pdiddy; //place_id
-                var index2 = url.substring(index1).search("&");
+                // var index2 = url.substring(index1).search("&");
 				// trip.id from url where 'tripid='up to '&'
-                var tripId = url.substring(index1+7, index1+index2);
+                var tripId = url.substring(index1+7);
+                /*if (index2) {
+                    tripId = url.substring(index1+7, index1+index2);
+                }*/
 				console.log(tripId);
                 $.ajax({
                     url: "http://localhost/endpoints/skip_location.php",
@@ -412,18 +435,22 @@ if (isset($_GET['tripname'])) {
                         place_id: placeId,
                         trip_id: tripId,
                     },
-                    //this should cause a visual update (red or grey background for skipped?)
+                    //this should cause a visual update
                     success: function(greyOut) {
-                        //var greyedOut = document.getElementById(pdiddy);
-                        //greyedOut.style.color = "red";
 						var section = document.getElementsByTagName("h5");
-						//var section = document.getElementById("itineraryList");
 						console.log(section);
 						for(i = 0; i < section.length; i++) {
-							//console.log(s);
 							if(section[i].id == pdiddy) {
-								console.log("here");
-                                    section[i].setAttribute("class", "skipped");
+                                // this crosses out the place name and turns it grey
+                                section[i].setAttribute("class", "skipped");
+                                // make the corresponding map marker invisible
+                                for(i = 0; i < markers.length; i++) {
+                                    if(markers[i].id == pdiddy) {
+                                        markers[i].setVisible(false);
+                                        tracePath();
+                                        break;
+                                    }
+                                }
 							}
 						}
                     },
@@ -454,7 +481,9 @@ if (isset($_GET['tripname'])) {
                         // gapi doesn't return the placeids in their order
                         // need to keep track of that. 
                         addedLocations.forEach(function(place) {
-                            pids[place.id] = {};
+                            if(!place.isSkipped) {
+                                pids[place.id] = {};
+                            }
                         });
 
                         console.log(pids);
