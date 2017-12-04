@@ -3,6 +3,7 @@
 ?>
 
 <head>
+    <link rel="stylesheet" href="CssStuff.css">
     <title>Login to Sights</title>
     <script src="jquery-3.2.1.min.js"></script>
     <script>
@@ -71,16 +72,35 @@
         }
     </script>
 </head>
-
+<!--- Sight Seer Header -->
+<div class="jumbotron">
+        <div class="container sight-seer">
+         Sight Seer
+        </div>
+    </div>
+<!-- Navigation Bar -->
+<header>
+    <div class="navigation">
+        <ul>
+            <li class="Info"><a href="#">Info</a></li>
+            <li class="Dashboard"><a href="http://localhost/main_page.php?debug=true&userid=1">Dashboard</a></li>
+            <li class="Trips"><a href="http://localhost/my_trips_page.php">My Trips</a></li>
+            <li class="Login"><a class="active" href="http://localhost/login_page.php">Login</a></li>
+            <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
+            <li class="Account"><a href="#">Account</a></li>
+        </ul>
+    </div>
+</header>
+<!--- end nav -->
 <body>
 <!--similar variable names like email have a prefix to distinguish login variables vs signup variables,
     "lo_" for login and "s_" for signup-->
     <div id="login">
     <span>Enter email:</span>
-    <input type="text" id="lo_email"></br>
+    <input type="text" placeholder="Email" id="lo_email"></br>
 
     <span>Enter password:</span>
-    <input type="password" id="lo_password"></br>
+    <input type="password" placeholder="Password" id="lo_password"></br>
     <button onclick="login()" id="login_button">Login</button></br>
     </div></br>
 

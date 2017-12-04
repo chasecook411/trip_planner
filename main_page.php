@@ -13,7 +13,7 @@
 // need to be able to add additional constraints to each location (time there)
 
 // need to be able to update map to show locations
-$key = "<check discord>";
+$key = "AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk";
 
 $userid = $_GET['userid'];
 if (isset($trip_name)) {
@@ -27,7 +27,8 @@ if (isset($trip_name)) {
 
 <html>
     <head>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24&callback=initMap"
+        <link rel="stylesheet" href="CssStuff.css">
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk&callback=initMap"
     async defer></script>
         <script src="jquery-3.2.1.min.js"></script>
         <style>
@@ -89,6 +90,7 @@ if (isset($trip_name)) {
         }
 
         // expects an array of locations
+        // dont edit css, find way to call border, cry
         function parseLocations(locations) {
             //debug(locations);
             locations = JSON.parse(locations);
@@ -98,30 +100,26 @@ if (isset($trip_name)) {
             while (parent.hasChildNodes()) {
                 parent.removeChild(parent.lastChild);
             }
-
             var sort = document.getElementById("sortOrder");
-
             if (sort.selectedIndex === 1) {
                 sortByRating(locations);
             }
-
             // we deleted the h4, so we need to put it back
             var h = document.createElement("h3");
             var text = document.createTextNode("Search Results");
             h.appendChild(text);
             parent.appendChild(h);
             locations.forEach(function (location) {
-
                 //debug(location.formatted_address);
-
+                var attractiondiv = document.createElement("div");
+                attractiondiv.setAttribute("class", "border");
                 var locationName = document.createElement("p");
+                parent.appendChild(attractiondiv);
                 var node = document.createTextNode("Name: " + location.name);
                 locationName.appendChild(node);
-
                 var locationAddress = document.createElement("p");
                 node = document.createTextNode("Address: " + location.formatted_address);
                 locationAddress.appendChild(node);
-
                 if (location.rating) {
                     var locationRating = document.createElement("p");
                     node = document.createTextNode("Rating: " + location.rating);
@@ -131,8 +129,6 @@ if (isset($trip_name)) {
                     node = document.createTextNode("Rating currently unavaiable.");
                     locationRating.appendChild(node);
                 }
-
-
                 var addButton = document.createElement("BUTTON");
                 var locationId = location.place_id;
                 //debug(locationId);
@@ -141,11 +137,10 @@ if (isset($trip_name)) {
                 addButton.setAttribute('name', locationId);
                 node = document.createTextNode("Add Location");
                 addButton.appendChild(node);
-
-                parent.appendChild(locationName);
-                parent.appendChild(locationAddress);
-                parent.appendChild(locationRating);
-                parent.appendChild(addButton);
+                attractiondiv.appendChild(locationName);
+                attractiondiv.appendChild(locationAddress);
+                attractiondiv.appendChild(locationRating);
+                attractiondiv.appendChild(addButton);
             });
         }
 
@@ -511,19 +506,21 @@ if (isset($trip_name)) {
         <style>
             #locations {
                 float: left;
-                width: 25%;
             }
 
             #itineraryList {
                 float: right;
-                width: 25%;
+                
             }
-
+            /* Map */
             #map {
                 float: right;
-                width: 50%;
+                    
             }
-
+            .border {
+                border: 2px solid black;
+                padding: 2px;
+            }
             .iconClass {
                 height: 15px;
                 width: 15px;
@@ -544,6 +541,20 @@ if (isset($trip_name)) {
                 text-decoration: line-through;
             }
 
+            .column {
+                float: left;
+            }
+
+            .columnmiddle {
+                width: 40%;
+            }
+
+            .columnside{
+                width: 20%;
+            }
+
+
+
         </style>
     </head>
 
@@ -559,6 +570,24 @@ if (isset($trip_name)) {
             echo '<body>';
         }
     ?>
+        <div class="jumbotron">
+        <div class="container sight-seer">
+         Sight Seer
+        </div>
+    </div>
+<!-- Navigation Bar -->
+<header>
+    <div class="navigation">
+        <ul>
+            <li class="Info"><a href="#">Info</a></li>
+            <li class="Dashboard"><a class="active" href="http://localhost/main_page.php?debug=true&userid=1">Dashboard</a></li>
+            <li class="Trips"><a href="http://localhost/my_trips_page.php">My Trips</a></li>
+            <li class="Login"><a href="http://localhost/login_page.php">Login</a></li>
+            <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
+            <li class="Account"><a href="#">Account</a></li>
+        </ul>
+    </div>
+</header>
 <!-- 
         Type: <input type="text" id="type" value="Bar"></br>
         Latitude: <input type="text" id="latitude" value="35"></br>
@@ -573,17 +602,24 @@ if (isset($trip_name)) {
             <option value="popularity" selected>Popularity</option>
             <option value="rating">Rating</option>
         </select></br>
-
-        <button onclick="getLocations()" id="attractions_button">Find Attractions</button></br>
+        <script>
+        //$(document).ready(function(){
+         //    $( getLocations() ).onclick( function() {
+          //      $("p").wrapAll(createElement("<div class='border' />"));
+          // } );
+         //});
+        </script>
+        <button onclick='getLocations()' id="attractions_button">Find Attractions</button></br>
         Total Distance: <span id="total"></span><br>
         <button onclick="optimizeTrip()" id="optimize_button">Optimize Your Trip</button>
-        <div id="locations">
-            <h3>Search Results</h3>
-        </div>
+        <div class="columnside">    
+            <div id="locations">
+                <h3>Search Results</h3>
+            </div>
 
         
-
-        <div id="itineraryList">
+        </div>
+        <div class="columnside" id="itineraryList">
             <h3>Added Locations</h3>
         </div>
         <div id="svbtn">
@@ -591,7 +627,7 @@ if (isset($trip_name)) {
             <button onclick="saveList()" id="save_button">Save Your Trip</button>
         </div>
 
-        <div id="map" onload="initMap()">
+        <div class="columnmiddle" id="map" onload="initMap()">
         </div>
     </body>
 </html>

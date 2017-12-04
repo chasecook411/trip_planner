@@ -8,7 +8,7 @@ if ($conn->connect_error) {
 // for accepting restful API calls
 $client_data = file_get_contents('php://input');
 
-$key = 'AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24';
+$key = 'AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk';
 
 if ($client_data) {
 	$trip_object = json_decode($client_data);
