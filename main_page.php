@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // need map
 
@@ -24,28 +24,12 @@ $trip_name = $_GET['tripname'];
 <html>
     <head>
         <script src="jquery-3.2.1.min.js"></script>
-        <style>
-          /* Always set the map height explicitly to define the size of the div
-           * element that contains the map. */
-          /*
-          #map {
-            height: 100%;
-          }
-          Optional: Makes the sample page fill the window. 
-          html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-          }
-          */
-
-        </style>
 
         <script>
 
         var addedLocations = [];
         function debug(str) {
-            <?php 
+            <?php
             if (isset($_GET['debug'])) {
                 echo "console.log(str);";
             }
@@ -72,8 +56,8 @@ $trip_name = $_GET['tripname'];
             // have a max of 50000 meters in the google API radius
             if (radius && radius < 50000) {
                     $.ajax({
-                    url: 'http://localhost/endpoints/get_locations.php?query=' + query + '&radius=' + radius, 
-                    type: "GET",   
+                    url: 'http://localhost/endpoints/get_locations.php?query=' + query + '&radius=' + radius,
+                    type: "GET",
                     cache: false,
                     success: parseLocations,
                     error: function(err) {
@@ -99,7 +83,7 @@ $trip_name = $_GET['tripname'];
             }
 
 
-            // we deleted the h4, so we need to put it back     
+            // we deleted the h4, so we need to put it back
             var h = document.createElement("h3");
             var text = document.createTextNode("Search Results");
             h.appendChild(text);
@@ -111,11 +95,11 @@ $trip_name = $_GET['tripname'];
                 var locationName = document.createElement("p");
                 var node = document.createTextNode("Name: " + location.name);
                 locationName.appendChild(node);
-                
+
                 var locationAddress = document.createElement("p");
                 node = document.createTextNode("Address: " + location.formatted_address);
                 locationAddress.appendChild(node);
-                
+
                 if (location.rating) {
                     var locationRating = document.createElement("p");
                     node = document.createTextNode("Rating: " + location.rating);
@@ -125,7 +109,7 @@ $trip_name = $_GET['tripname'];
                     node = document.createTextNode("Rating currently unavaiable.");
                     locationRating.appendChild(node);
                 }
-                
+
 
                 var addButton = document.createElement("BUTTON");
                 var locationId = location.place_id;
@@ -135,7 +119,7 @@ $trip_name = $_GET['tripname'];
                 node = document.createTextNode("Add Location");
                 addButton.appendChild(node);
 
-                
+
                 parent.appendChild(locationName);
                 parent.appendChild(locationAddress);
                 parent.appendChild(locationRating);
@@ -150,8 +134,8 @@ $trip_name = $_GET['tripname'];
             //debug(baseUrl);
             debug('http://localhost/endpoints/get_location_data.php?placeid=' + locationId);
             $.ajax({
-                url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId, 
-                type: "GET",   
+                url: 'http://localhost/endpoints/get_location_data.php?placeid=' + locationId,
+                type: "GET",
                 cache: false,
                 success: parseLocationDetails,
                 error: function(err) {
@@ -188,7 +172,7 @@ $trip_name = $_GET['tripname'];
             addedLocations.forEach(function(result) {
 
                 console.log('adding to list', result.id);
-                // if the element doesn't already exist  
+                // if the element doesn't already exist
                 // on the page, add it!
 
                 //debug(result)
@@ -218,12 +202,12 @@ $trip_name = $_GET['tripname'];
                         website.setAttribute("href", result.url);
                         parent.appendChild(website);
                     }
-                    
+
 
                     var lineBreak = document.createElement("br");
                     parent.appendChild(lineBreak);
 
-                    
+
                     // if the API returned hours of operation
                     if (result.opening_hours) {
                         var operation = document.createElement("p");
@@ -275,8 +259,8 @@ $trip_name = $_GET['tripname'];
         function loadList(tripId) {
             //debug('loading list! for trip id ' + tripId);
             $.ajax({
-                url: 'http://localhost/endpoints/query_attractions.php?tripid=' + tripId + '&userid=' + '<?php echo $userid; ?>', 
-                type: "GET",   
+                url: 'http://localhost/endpoints/query_attractions.php?tripid=' + tripId + '&userid=' + '<?php echo $userid; ?>',
+                type: "GET",
                 cache: false,
                 success: function(result) {
                     result = JSON.parse(result);
@@ -325,13 +309,26 @@ $trip_name = $_GET['tripname'];
             }
 
         </style>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Lost Traveler</title>
+        <!-- Bootstrap core CSS-->
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom fonts for this template-->
+        <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <!-- Custom styles for this template-->
+        <link href="css/sb-admin.css" rel="stylesheet">
     </head>
+    <body class="fixed-nav sticky-footer bg-dark" id="page-top">
 
     <?php
 
         if (isset($_GET['tripid'])) {
             // if the trip id is already set, then we want to update the page
-            // to show the locations already on that trip. Everything else should 
+            // to show the locations already on that trip. Everything else should
             // stay the same
             $tripid = $_GET['tripid'];
             echo '<body onload="loadList(' . $tripid . ')">';
@@ -341,7 +338,7 @@ $trip_name = $_GET['tripname'];
     ?>
                 <div id="map">
         </div>
-<!-- 
+<!--
         Type: <input type="text" id="type" value="Bar"></br>
         Latitude: <input type="text" id="latitude" value="35"></br>
         Longitude: <input type="text" id="longitude" value="-90"></br>
@@ -355,7 +352,7 @@ $trip_name = $_GET['tripname'];
             <h3>Search Results</h3>
         </div>
 
-        
+
 
         <div id="itineraryList">
             <h3>Added Locations</h3>
