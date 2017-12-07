@@ -218,6 +218,9 @@ if (isset($_GET['tripname'])) {
                 p.isSkipped = true;
             }
 
+            if (map == null) {
+                initMap();
+            }
             map.setCenter({ lat: p.latitude, lng: p.longitude});
 
             var marker = new google.maps.Marker({
