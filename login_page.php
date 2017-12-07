@@ -37,6 +37,7 @@
             });
         }
 
+        //creates new user and then redirects to my_trips_page.php
         function signup() {
             var f_name = document.getElementById('f_name').value;
             var l_name = document.getElementById('l_name').value;
@@ -53,13 +54,18 @@
                         email: email,
                         password: password,
                     },
-                    success: console.log("Signup Successful!"),
+                    success: function() {
+                            console.log('successful signup');
+                            $("#lo_email").val($("#s_email").val());
+                            $("#lo_password").val($("#s_password").val());
+                            login();
+                        },
                     error: function(err) {
                         console.log(err);
 
                         var parent = document.getElementById("signup");
                         var h = document.createElement("p");
-                        var text = document.createTextNode("Error signing In");
+                        var text = document.createTextNode("Error signing Up");
 
                         h.appendChild(text);
                         parent.appendChild(h);

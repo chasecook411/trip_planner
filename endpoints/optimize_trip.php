@@ -14,7 +14,7 @@ if ($client_data) {
 	$trip_object = json_decode($client_data);
 
     //print_r($trip_object);
-    $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?key=AIzaSyDudH82XEdtorLPxfFh8MyX_616Ns_QX24&origins=';
+    $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?key=AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk&origins=';
 
     for ($i = 0; $i < count($trip_object); $i++) {
         $url .= "place_id:" . $trip_object[$i]->id;

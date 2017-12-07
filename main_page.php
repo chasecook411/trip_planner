@@ -16,21 +16,20 @@
 $key = "AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk";
 
 $userid = $_GET['userid'];
-if (isset($trip_name)) {
+if (isset($_GET['tripname'])) {
     $trip_name = $_GET['tripname'];
 } else {
     $trip_name = "";
 }
 ?>
 
-
-
 <html>
     <head>
+
         <link rel="stylesheet" href="CssStuff.css">
+        <script src="jquery-3.2.1.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrf1CoJf5si6S2jo7_hxNKELjZgFBlIPk&callback=initMap"
     async defer></script>
-        <script src="jquery-3.2.1.min.js"></script>
         <style>
 
             #map {
@@ -43,6 +42,7 @@ if (isset($trip_name)) {
         <script>
 
         var addedLocations = [];
+        var tripCords = [];
         function debug(str) {
             <?php
             if (isset($_GET['debug'])) {
@@ -56,7 +56,9 @@ if (isset($trip_name)) {
         $lon = -89.9368;
         ?>
         var map = null;
+        var markers = [];
         var totalDistance = 0;
+        var tracedPath = null;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -64,6 +66,33 @@ if (isset($trip_name)) {
                 center: {lat: <?php echo $lat; ?>, lng: <?php echo $lon; ?>}
             });
         }
+
+        //called in tail end of addLocation() after parseLocationDetails() has been called
+        //Could be moved to better spot
+        function tracePath() {
+            var coordinates = [];
+            //add the coordinates for every location in addedLocations into coordinates array
+            addedLocations.forEach(function(p) {
+                if(!p.isSkipped) {
+                    coordinates.push({lat: p.latitude, lng: p.longitude})
+                }
+            });
+
+            // if a path is already on the map, remove it before drawing the new one.
+            if(tracedPath != null) {
+                tracedPath.setMap(null);
+            }
+            //creates the polyline with the path specified by coordinates array
+            tracedPath = new google.maps.Polyline({
+                path: coordinates,
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            //give the map to the polyline object
+            tracedPath.setMap(map);
+         }
 
         function getLocations() {
             var query = document.getElementById('search').value;
@@ -159,12 +188,12 @@ if (isset($trip_name)) {
                     debug(err);
                 }
             });
+            tracePath();
         }
 
         function parseLocationDetails(place, priority) {
             //debug('got place ' + place);
             place = JSON.parse(place).result;
-
 
             var rating = 99;
             if (place.rating) {
@@ -184,6 +213,11 @@ if (isset($trip_name)) {
                 isSkipped: false
             }
 
+            // console.log("priority check: " + priority);
+            if(priority && priority == 127) {
+                p.isSkipped = true;
+            }
+
             map.setCenter({ lat: p.latitude, lng: p.longitude});
 
             var marker = new google.maps.Marker({
@@ -192,9 +226,13 @@ if (isset($trip_name)) {
                     lat: p.latitude,
                     lng: p.longitude
                 },
-                title: p.name
+                title: p.name,
+                id: p.id
             });
-
+            if(p.isSkipped) {
+                marker.setVisible(false);
+            }
+            markers.push(marker);
             addedLocations.push(p);
 
             // at this point, we can consider this place to be the last in the list? 
@@ -237,8 +275,9 @@ if (isset($trip_name)) {
                 userLocation.appendChild(node);
                 userLocation.setAttribute("class", "locationNameClass");
                 parent.appendChild(userLocation);
-
-                if (priority && priority == -1) {
+                
+                //console.log("priority for " + p.name " is " + priority);
+                if (priority && priority == 127) {
                     userLocation.setAttribute('class','skipped');
                 }
 
@@ -327,7 +366,12 @@ if (isset($trip_name)) {
                 contentType: "application/json",
                 success: function(result) {
                     debug('added list to db');
-                    debug(JSON.stringify(result));
+                    if (result) {
+                        var tripData = JSON.parse(result);
+                        if (tripData && tripData.trip_id) {
+                            window.location.replace(window.location.href + '&tripid=' + tripData.trip_id);
+                        }    
+                    }
                 },
                 error: function(err) {
                     console.log('Error adding list');
@@ -344,6 +388,7 @@ if (isset($trip_name)) {
                 success: function(result) {
                     result = JSON.parse(result);
                     result.forEach(function(place) {
+                        //console.log("p.id: " + place.place_id + " priority " + place.priority);
                         addLocation(place.place_id, place.priority);
                     });
                 },
@@ -351,6 +396,7 @@ if (isset($trip_name)) {
                     debug(err);
                 }
             });
+
         }
 
         // This skips an attraction on the list, but does not permanently remove it.
@@ -364,16 +410,21 @@ if (isset($trip_name)) {
 					key.isSkipped = true;
 				}
 			}
-            var url = window.location.href;
-            var index1 = url.search("tripid=");
+            //var url = window.location.href;
+            // var index1 = url.search("tripid=");
+            var tripId = <?php echo $_GET['tripid']; ?>;
             // if you have not saved your trip, there is no tripid and we have nothing
             // in the database to interact with at the moment. search returns -1 if not found.
-            if(index1 >= 0) {
+            //if(index1 >= 0) {
+            if(tripId) {
 				// place.id from attraction in array
                 var placeId = pdiddy; //place_id
-                var index2 = url.substring(index1).search("&");
+                // var index2 = url.substring(index1).search("&");
 				// trip.id from url where 'tripid='up to '&'
-                var tripId = url.substring(index1+7, index1+index2);
+                //var tripId = url.substring(index1+7);
+                /*if (index2) {
+                    tripId = url.substring(index1+7, index1+index2);
+                }*/
 				console.log(tripId);
                 $.ajax({
                     url: "http://localhost/endpoints/skip_location.php",
@@ -382,18 +433,22 @@ if (isset($trip_name)) {
                         place_id: placeId,
                         trip_id: tripId,
                     },
-                    //this should cause a visual update (red or grey background for skipped?)
+                    //this should cause a visual update
                     success: function(greyOut) {
-                        //var greyedOut = document.getElementById(pdiddy);
-                        //greyedOut.style.color = "red";
 						var section = document.getElementsByTagName("h5");
-						//var section = document.getElementById("itineraryList");
 						console.log(section);
 						for(i = 0; i < section.length; i++) {
-							//console.log(s);
 							if(section[i].id == pdiddy) {
-								console.log("here");
-                                    section[i].setAttribute("class", "skipped");
+                                // this crosses out the place name and turns it grey
+                                section[i].setAttribute("class", "skipped");
+                                // make the corresponding map marker invisible
+                                for(i = 0; i < markers.length; i++) {
+                                    if(markers[i].id == pdiddy) {
+                                        markers[i].setVisible(false);
+                                        tracePath();
+                                        break;
+                                    }
+                                }
 							}
 						}
                     },
@@ -424,7 +479,9 @@ if (isset($trip_name)) {
                         // gapi doesn't return the placeids in their order
                         // need to keep track of that. 
                         addedLocations.forEach(function(place) {
-                            pids[place.id] = {};
+                            if(!place.isSkipped) {
+                                pids[place.id] = {};
+                            }
                         });
 
                         console.log(pids);
@@ -442,6 +499,7 @@ if (isset($trip_name)) {
                         
 
                         console.log('The shortest path is!!!');
+                        console.log(JSON.stringify(pids));
                         $.ajax({
                             url: "http://localhost/endpoints/relay.php",
                             type: "POST",
@@ -468,19 +526,20 @@ if (isset($trip_name)) {
                                 ?>
                                 console.log(JSON.stringify(optimizedObject));
 
+                                // now I need to update the db with the new list.
                                 $.ajax({
-                                    url: "http://localhost/endpoints/relay.php",
+                                    url: "http://localhost/endpoints/update_trip_by_id.php",
                                     type: "POST",
                                     data: JSON.stringify(optimizedObject),
                                     success: function(result) {
                                         console.log(result);
+                                        // we'll just refresh the page to force a redraw
                                         window.location.replace(window.location.href);
                                     },
                                     error: function(err) {
                                         console.log(err);
                                     }
                                 });
-                                // now I need to update the db with the new list.
 
                             }, 
                             error: function(err) {
