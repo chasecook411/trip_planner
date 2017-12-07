@@ -517,6 +517,10 @@ if (isset($trip_name)) {
                 float: right;
                     
             }
+            h5 {
+                border: 2px solid black;
+                padding: 2px;
+            }
             .border {
                 border: 2px solid black;
                 padding: 2px;
@@ -580,7 +584,7 @@ if (isset($trip_name)) {
     <div class="navigation">
         <ul>
             <li class="Info"><a href="#">Info</a></li>
-            <li class="Dashboard"><a class="active" href="http://localhost/main_page.php?debug=true&userid=1">Dashboard</a></li>
+            <li class="Dashboard"><a class="active" href="http://localhost/main_page.php">Dashboard</a></li>
             <li class="Trips"><a href="http://localhost/my_trips_page.php">My Trips</a></li>
             <li class="Login"><a href="http://localhost/login_page.php">Login</a></li>
             <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>

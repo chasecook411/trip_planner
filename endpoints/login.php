@@ -31,6 +31,9 @@ if ($count > 0) {
     while($row = $result->fetch_assoc()) {
     	print_r(json_encode($row));
     }
+    // $session_start();
+    // $_SESSION['loggedin'] = true;
+    // $_SESSION['email'] = true;
 } else {
 	// $error = array('error' => 'true', 'query' => $query);
 	// print_r(json_encode($error));

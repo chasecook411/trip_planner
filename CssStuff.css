@@ -1,0 +1,106 @@
+h1 {
+	
+}
+
+.sight-seer{
+	color: blue;
+	font-family: Arial;
+	font-size: 50px;
+	padding: 10px;
+	text-align: center;
+	border-left: 6px solid blue;
+	border-right: 6px solid blue;
+	margin-top: 10px; 
+	margin-bottom: 10px;
+	margin-left: 400px;
+	margin-right: 20px;
+	background-color: lightgray;
+	width: 500px;
+}
+
+.info1{
+	color: black;
+	padding: 10px;
+	text-align: center;
+	border-left: 8px solid blue;
+	background-color: lightgray
+	font-size: 40px;
+	
+
+}
+
+html, body, {
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+/* Nav Bar */
+.navigation {
+	list-style: none;
+	text-align: center;
+	padding: 0;
+	margin: 0 0 3em 0;
+	background-color: lightgray;
+	float: left;
+	width: 100%;
+	border-bottom: 1px solid #ff8100;
+	border-top: 1px solid #ff8100;
+}
+
+.navigation ul{
+	overflow: auto;
+	list-style-type: none;
+}
+
+.navigation li{
+	font-family: 'Oswald', sans-serif;
+	font-size: 1.1em;
+	line-height: 40px;
+	height: 42px;
+	border-bottom: 1px solid #888;
+	float: left;
+}
+
+.navigation a{
+	text-decoration: none;
+	color: blue;
+	cursor: default;
+	display: block;
+	padding: 1px 75px;
+	font-weight: bold;
+	border-right: 1px solid #ff8100;
+}
+
+.navigation a:hover{
+	background-color: #005f5f;
+}
+
+.navigation a.active{
+	background-color: #fff;
+	color: #444;
+	cursor: default;
+}
+/* End Nav Bar */
+
+.constraint li{
+	font-family: 'Oswald', sans-serif;
+	font-size: .8em;
+	height: 10px;
+	text-align: center;
+	display: block;
+	list-style-type: none;
+	padding: 10px;
+}
+
+.location{
+	border: 2px solid orange;
+	float: left;
+	
+}
+
+/* Login stuff */
+
+
+/* Main Page */

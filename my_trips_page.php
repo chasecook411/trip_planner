@@ -78,8 +78,8 @@ $userid = $_GET['userid'];
     <div class="navigation">
         <ul>
             <li class="Info"><a href="#">Info</a></li>
-            <li class="Dashboard"><a href="http://localhost/main_page.php?debug=true&userid=1">Dashboard</a></li>
-            <li class="Trips"><a class="active" href="http://localhost/my_trips_page.php">My Trips</a></li>
+            <li class="Dashboard"><a href="http://localhost/main_page.php">Dashboard</a></li>
+            <li class="Trips"><a class="active" href="http://localhost/my_trips_page.php" >My Trips</a></li>
             <li class="Login"><a href="http://localhost/login_page.php">Login</a></li>
             <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
             <li class="Account"><a href="#">Account</a></li>

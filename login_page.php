@@ -83,7 +83,7 @@
     <div class="navigation">
         <ul>
             <li class="Info"><a href="#">Info</a></li>
-            <li class="Dashboard"><a href="http://localhost/main_page.php?debug=true&userid=1">Dashboard</a></li>
+            <li class="Dashboard"><a href="http://localhost/main_page.php">Dashboard</a></li>
             <li class="Trips"><a href="http://localhost/my_trips_page.php">My Trips</a></li>
             <li class="Login"><a class="active" href="http://localhost/login_page.php">Login</a></li>
             <li class="Signup"><a href="http://localhost/login_page.php">Sign Up</a></li>
@@ -106,19 +106,19 @@
 
     <div id="signup">
     <span>First Name:</span>
-    <input type="text" id="f_name"></br>
+    <input type="text" placeholder="Joe" id="f_name"></br>
 
     <span>Last Name:</span>
-    <input type="text" id="l_name"></br>
+    <input type="text" placeholder="Smith" id="l_name"></br>
 
     <span>Email:</span>
-    <input type="text" id="s_email"></br>
+    <input type="text" placeholder="example@site.com" id="s_email"></br>
 
     <span>Password:</span>
-    <input type="password" id="s_password"></br>
+    <input type="password" placeholder="Password" id="s_password"></br>
 
     <span>Confirm Password:</span>
-    <input type="password" id="s_confirm_password"></br>
+    <input type="password" placeholder="Enter Password Again" id="s_confirm_password"></br>
 
     <button onclick="signup()" id="signup_button">Signup</button></br>
     </div>
