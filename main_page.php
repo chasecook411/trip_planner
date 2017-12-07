@@ -414,16 +414,18 @@ if (isset($_GET['tripname'])) {
 					key.isSkipped = true;
 				}
 			}
-            var url = window.location.href;
-            var index1 = url.search("tripid=");
+            //var url = window.location.href;
+            // var index1 = url.search("tripid=");
+            var tripId = <?php echo $_GET['tripid']; ?>;
             // if you have not saved your trip, there is no tripid and we have nothing
             // in the database to interact with at the moment. search returns -1 if not found.
-            if(index1 >= 0) {
+            //if(index1 >= 0) {
+            if(tripId) {
 				// place.id from attraction in array
                 var placeId = pdiddy; //place_id
                 // var index2 = url.substring(index1).search("&");
 				// trip.id from url where 'tripid='up to '&'
-                var tripId = url.substring(index1+7);
+                //var tripId = url.substring(index1+7);
                 /*if (index2) {
                     tripId = url.substring(index1+7, index1+index2);
                 }*/
