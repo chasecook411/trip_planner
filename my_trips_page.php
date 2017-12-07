@@ -22,26 +22,32 @@ $userid = $_GET['userid'];
 			}
 			//expects array of trips and will load this content on page
 			function parseTrips(trips) {
-				trips = JSON.parse(trips);
-				var parent = document.getElementById("trips");
-				trips.forEach(function (trip) {
-					var tripName = document.createElement("p");
-					var node = document.createTextNode("Name: " + trip.trip_name);
-					tripName.appendChild(node);
-					var tripDate = document.createElement("p");
-					var node = document.createTextNode("Date: " + trip.day);
-					tripDate.appendChild(node);
-					var viewButton = document.createElement("BUTTON");
-					var tripId = trip.trip_id;
-					viewButton.setAttribute("id", tripId);
-					viewButton.setAttribute('onclick',"viewTrip('" + tripId + "', '" + trip.trip_name + "')");
-					node = document.createTextNode("View Trip");
-					viewButton.appendChild(node);
-					parent.appendChild(tripName);
-					parent.appendChild(tripDate);
-					parent.appendChild(viewButton);
-				});
+				if (trips === "") {
+					var noTrips = $("<p></p>").text("You have no trips. Use the field to create one now.");
+					$("#trips").append(noTrips);
+				} else {
+					trips = JSON.parse(trips);
+					var parent = document.getElementById("trips");
+					trips.forEach(function (trip) {
+						var tripName = document.createElement("p");
+						var node = document.createTextNode("Name: " + trip.trip_name);
+						tripName.appendChild(node);
+						var tripDate = document.createElement("p");
+						var node = document.createTextNode("Date: " + trip.day);
+						tripDate.appendChild(node);
+						var viewButton = document.createElement("BUTTON");
+						var tripId = trip.trip_id;
+						viewButton.setAttribute("id", tripId);
+						viewButton.setAttribute('onclick',"viewTrip('" + tripId + "', '" + trip.trip_name + "')");
+						node = document.createTextNode("View Trip");
+						viewButton.appendChild(node);
+						parent.appendChild(tripName);
+						parent.appendChild(tripDate);
+						parent.appendChild(viewButton);
+					});
+				}
 			}
+
 			//redirects to main_page with the trip id as argument to load this trip
 			function viewTrip(tripId, tripname) {
 				url = "http://localhost/main_page.php?debug=true&userid=<?php echo $userid; ?>";
@@ -51,7 +57,29 @@ $userid = $_GET['userid'];
 
 			function createNewTrip() {
 				var tripName = document.getElementById('trip_name').value;
-				window.location.assign("http://localhost/main_page.php?userid=" + <?php echo $userid ?> + '&tripname=' + tripName);
+
+				var tripObject = {
+					'userid': <?php echo $userid; ?>,
+					'trip_name': tripName
+				};
+
+				$.ajax({
+					url: 'http://localhost/endpoints/create_trip.php',
+					type: "POST",
+					data: JSON.stringify(tripObject),
+					contentType: "application/json",
+					success: function(result) {
+                    	if (result) {
+                        	var tripData = JSON.parse(result);
+                        	if (tripData && tripData.trip_id) {
+                            	window.location.assign("http://localhost/main_page.php?debug=true&userid=" + <?php echo $userid; ?> + "&tripid=" + tripData.trip_id + "&tripname=" + tripName);
+                        	}    
+                    	}
+                	},
+                	error: function(err) {
+                    	console.log('Error adding trip');
+                	}
+            	});
 			}
 
 		</script>
